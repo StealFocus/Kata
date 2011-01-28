@@ -1,6 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
-	<Product Id="603385b6-4050-4cb6-a1aa-32ed8332fbe3" Name="StealFocus.Kata.Setup" Language="1033" Version="1.0.0.0" Manufacturer="StealFocus.Kata.Setup" UpgradeCode="645e5e2d-64a5-47e8-b2f6-a29f42e10410">
+	<Product 
+    Id="603385b6-4050-4cb6-a1aa-32ed8332fbe3" 
+    Name="StealFocus.Kata.Setup" 
+    Language="1033" 
+    Version="1.0.0.0" 
+    Manufacturer="StealFocus.Kata.Setup" 
+    UpgradeCode="645e5e2d-64a5-47e8-b2f6-a29f42e10410">
+    
 		<Package InstallerVersion="200" Compressed="yes" />
 
 		<Media Id="1" Cabinet="media1.cab" EmbedCab="yes" />
@@ -23,5 +30,6 @@
 			<!-- Note: The following ComponentGroupRef is required to pull in generated authoring from project references. -->
 			<ComponentGroupRef Id="Product.Generated" />
 		</Feature>
+    
 	</Product>
 </Wix>
