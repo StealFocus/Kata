@@ -64,7 +64,7 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <ConfigurationFilesProcessedLocationPath>$(ProjectDir)obj\$(Configuration)\ConfigurationFiles</ConfigurationFilesProcessedLocationPath>
+    <ConfigurationFilesProcessedLocationPath>$(ProjectDir)obj\$(Configuration)\Config</ConfigurationFilesProcessedLocationPath>
     <UseTempExtensionForTemporaryConfigurationFiles>true</UseTempExtensionForTemporaryConfigurationFiles>
   </PropertyGroup>
 
