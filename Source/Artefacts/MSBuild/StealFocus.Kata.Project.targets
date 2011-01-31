@@ -25,7 +25,11 @@
     <IsOffice2007AddInProject>true</IsOffice2007AddInProject>
   </PropertyGroup>
 
-  <PropertyGroup Condition=" '$(IsWebProject)'=='true' Or '$(IsOffice2007AddInProject)'=='true' Or Exists('app.config') Or '$(OutputType)'=='Module' Or '$(OutputType)'=='Package' ">
+  <PropertyGroup Condition=" '$(UseVSHostingProcess)'!='' ">
+    <IsSharePointProject>true</IsSharePointProject>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(IsWebProject)'=='true' Or '$(IsOffice2007AddInProject)'=='true' Or '$(IsSharePointProject)'=='true' Or Exists('$(MSBuildProjectDirectory)\app.config') Or '$(OutputType)'=='Module' Or '$(OutputType)'=='Package' ">
     <IsDependantOnConfigurationFiles>true</IsDependantOnConfigurationFiles>
   </PropertyGroup>
   

@@ -2,12 +2,12 @@
 <Wix
   xmlns="http://schemas.microsoft.com/wix/2006/wi">
   <Product
-    Id="D5771F89-98C8-43E4-848C-FE277D3505FE"
+    Id="89A15377-1EDD-40FC-A2FB-34ECA423015E"
     Name="StealFocus Kata $(var.BuildLabelNumber)"
     Language="1033"
     Version="$(var.VersionNumber)"
     Manufacturer="StealFocus"
-    UpgradeCode="79D01D5B-BFD2-404D-8F7B-2043324107AC">
+    UpgradeCode="A50D164F-51A3-41D5-8AAE-408BF02B21F4">
 
     <Package InstallerVersion="200" Compressed="yes" />
 
@@ -21,7 +21,7 @@
         <Directory Id='MSBuild' Name='MSBuild'>
           <Directory Id='MSBuild_StealFocus' Name='StealFocus'>
             <Directory Id='MSBuild_StealFocus_Kata' Name='Kata'>
-              <Directory Id='MSBuild_StealFocus_Kata_v1.1' Name='v1.1'>
+              <Directory Id='MSBuild_StealFocus_Kata_v1.2' Name='v1.2'>
                 <Component Id='MSBuildScripts' Guid='{C2F7A3F1-D779-46AC-B99D-0C84482B6C3F}' KeyPath='yes'>
                   <File
                     Id='StealFocus.Kata.Build.targets'
@@ -52,7 +52,7 @@
                     Name='StealFocus.Kata.targets'
                     Source='..\Artefacts\MSBuild\StealFocus.Kata.targets' />
                 </Component>
-                <Directory Id='MSBuild_StealFocus_Kata_v1.1_MicrosoftSdcTasks' Name='MicrosoftSdcTasks'>
+                <Directory Id='MSBuild_StealFocus_Kata_v1.2_MicrosoftSdcTasks' Name='MicrosoftSdcTasks'>
                   <Component Id='MicrosoftSdcTasks' Guid='{AAF5FB34-286E-432A-8C82-A77074ACE852}' KeyPath='yes'>
                     <File
                       Id='Installing_and_Using_the_SDC_Tasks.pdf'
@@ -98,7 +98,7 @@
         </Directory>
         <Directory Id='StealFocus' Name='StealFocus'>
           <Directory Id='StealFocus_Kata' Name='Kata'>
-            <Directory Id='StealFocus_Kata_Version1.1' Name='Version 1.1'>
+            <Directory Id='StealFocus_Kata_Version1.2' Name='Version 1.2'>
               <Component Id='Core' Guid='{BD36746E-A6EC-4E03-ABEF-25FA9F264441}' KeyPath='yes'>
                 <!-- License file -->
                 <File
