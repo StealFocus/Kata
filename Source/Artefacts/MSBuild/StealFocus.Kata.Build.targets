@@ -156,8 +156,7 @@
       Condition=" '%(WebApplicationProject.Identity)'!='' "
       Projects="$(MSBuildProjectFile)"
       Targets="DeleteAppPool"
-      Properties="AppPoolName=%(WebApplicationProject.Identity)"
-      ToolsVersion="$(ToolsVersion)" />
+      Properties="AppPoolName=%(WebApplicationProject.Identity)" />
     <!-- Add AppPool Service Accounts to Local Groups.  -->
     <Message
       Importance="high"
@@ -261,8 +260,7 @@
       Condition=" '%(WebApplicationProject.Identity)'!='' "
       Projects="$(MSBuildProjectFile)"
       Targets="SetupScriptMaps"
-      Properties="VirtualDirectoryName=%(WebApplicationProject.Identity)"
-      ToolsVersion="$(ToolsVersion)" />
+      Properties="VirtualDirectoryName=%(WebApplicationProject.Identity)" />
   </Target>
 
   <Target Name="CoreInitialiseEnvironment" DependsOnTargets="SetupIis">
@@ -288,7 +286,6 @@
     <!-- 
       Add Strong Name Verification Skipping entry.
     -->
-    <!-- TO DO: Also cater for SDK 7.0 (base on "ToolsVersion" property) -->
     <PropertyGroup>
       <SixPointZeroSdkBinPath>$(SYSTEMDRIVE)\Program Files\Microsoft SDKs\Windows\v6.0A\Bin</SixPointZeroSdkBinPath>
       <SixPointOneSdkBinPath>$(SYSTEMDRIVE)\Program Files\Microsoft SDKs\Windows\v6.1\Bin</SixPointOneSdkBinPath>
@@ -363,45 +360,20 @@
     <MSBuild
       Condition=" '%(DatabaseProject.Identity)'!='' "
       Projects="%(DatabaseProject.FullPath)"
-      Targets="Rebuild;Deploy"
-      ToolsVersion="$(ToolsVersion)" />
-  </Target>
-
-  <Target Name="CoreSolutionCompileConfigurationAndPackageSharePointSolutions">
-    <MSBuild
-      Condition=" '$(IsDesktopBuild)'=='true' "
-      Projects="$(Solution)"
-      Properties="Configuration=$(Configuration);OutputPath=$(OutputPath);$(Properties);$(CustomPropertiesForBuild)"
-      Targets="$(Targets)"
-      ToolsVersion="$(ToolsVersion)" />
-    <MSBuild
-      Condition=" '$(IsDesktopBuild)'!='true' "
-      Projects="$(Solution)"
-      Properties="Configuration=$(Configuration);OutputPath=$(OutputPath);$(Properties);$(CustomPropertiesForBuild);DelaySign=false;AssemblyOriginatorKeyFile=$(StrongNameKeyPairPath)"
-      Targets="$(Targets)"
-      ToolsVersion="$(ToolsVersion)" />
-    <!-- For some reason we have to delete the "pkg" folders in the SharePoint project folders else the build fails. -->
-    <RemoveDir Directories="%(SharePointProject.Directory)\pkg" />
-    <MSBuild
-      Condition=" '%(SharePointProject.Identity)'!='' And '$(IsDesktopBuild)'=='true' "
-      Projects="%(SharePointProject.FullPath)"
-      Properties="Configuration=$(Configuration);OutputPath=$(OutputPath);$(Properties);$(CustomPropertiesForBuild)"
-      Targets="Package"
-      ToolsVersion="$(ToolsVersion)" />
-    <MSBuild
-      Condition=" '%(SharePointProject.Identity)'!='' And '$(IsDesktopBuild)'!='true' "
-      Projects="%(SharePointProject.FullPath)"
-      Properties="Configuration=$(Configuration);OutputPath=$(OutputPath);$(Properties);$(CustomPropertiesForBuild);DelaySign=false;AssemblyOriginatorKeyFile=$(StrongNameKeyPairPath)"
-      Targets="Package"
-      ToolsVersion="$(ToolsVersion)" />
+      Targets="Rebuild;Deploy" />
   </Target>
   
   <Target Name="CoreSolutionCompileConfiguration">
     <MSBuild
-      Projects="$(MSBuildProjectFile)"
-      Properties="Solution=$(Solution);Targets=$(Targets);Properties=$(Properties);Configuration=%(ConfigurationToBuild.FlavorToBuild);OutputPath=$(BuildDir)\%(ConfigurationToBuild.FlavorToBuild);"
-      Targets="CoreSolutionCompileConfigurationAndPackageSharePointSolutions"
-      ToolsVersion="$(ToolsVersion)" />
+      Condition=" '$(IsDesktopBuild)'=='true' "
+      Projects="$(Solution)"
+      Properties="Configuration=%(ConfigurationToBuild.FlavorToBuild);OutputPath=$(BuildDir)\%(ConfigurationToBuild.FlavorToBuild);$(Properties);$(CustomPropertiesForBuild)"
+      Targets="$(Targets)" />
+    <MSBuild
+      Condition=" '$(IsDesktopBuild)'!='true' "
+      Projects="$(Solution)"
+      Properties="Configuration=%(ConfigurationToBuild.FlavorToBuild);OutputPath=$(BuildDir)\%(ConfigurationToBuild.FlavorToBuild);$(Properties);$(CustomPropertiesForBuild);DelaySign=false;AssemblyOriginatorKeyFile=$(StrongNameKeyPairPath)"
+      Targets="$(Targets)" />
   </Target>
 
   <Target Name="CoreSolutionCompile">
@@ -411,19 +383,17 @@
     <MSBuild
       Projects="$(MSBuildProjectFile)"
       Properties="Solution=%(SolutionToBuild.Identity);BuildDir=$(BuildDir);Properties=%(SolutionToBuild.Properties);Targets=%(SolutionToBuild.Targets);"
-      Targets="CoreSolutionCompileConfiguration"
-      ToolsVersion="$(ToolsVersion)" />
+      Targets="CoreSolutionCompileConfiguration" />
   </Target>
 
   <Target Name="CoreRunTests">
     <Message
       Importance="high" 
       Text="Running tests." />
-    <!-- "ToolsVersion" property applied to "FrameworkVersion" attribute intentionally. -->
-    <StealFocus.MSBuild.Tasks.MSTest
+    <MSTest 
       BinariesRootPath="$(BuildDir)" 
       FlavorToBuild="%(ConfigurationToBuild.FlavorToBuild)" 
-      FrameworkVersion="$(ToolsVersion)"
+      FrameworkVersion="$(FrameworkVersion)"
       TestContainerSearchFilters="$(MSTestTestContainerSearchFilters)" 
       TestRunConfigFilePath="$(MSTestTestRunConfigFilePath)" 
       WorkingDirectory="..\" />
@@ -435,8 +405,7 @@
       Text="Building documentation." />
     <MSBuild
       Projects="$(DocumentationProjectFile)"
-      Properties="OutDir=$(BuildDir)\$(ConfigurationForDocumentationBuild);OutputPath=$(BuildDir)\Documentation"
-      ToolsVersion="$(ToolsVersion)" />
+      Properties="OutDir=$(BuildDir)\$(ConfigurationForDocumentationBuild);OutputPath=$(BuildDir)\Documentation" />
     <!-- 
       TO DO: Does "HelpFileVersion" do anything if supplied? 
       Properties="Configuration=Release;Platform=AnyCPU;OutDir=$(BinariesRoot)\Release;HelpFileVersion=$(BuildLabelNumberComponent);"
@@ -451,23 +420,20 @@
     <MSBuild
       Condition=" '%(Environments.Identity)'!='Development' And '$(IsDesktopBuild)'=='true' And '%(Environments.IsIncludedInDesktopBuild)'=='true' "
       Projects="$(SetupProjectFile)"
-      Properties="Configuration=$(Configuration);OutputPath=$(BuildDir)\$(Configuration);$(Properties);$(CustomPropertiesForBuild);Environment=%(Environments.Identity);IsSetupBuild=true"
-      Targets="Clean;Build"
-      ToolsVersion="$(ToolsVersion)" />
+      Properties="Configuration=$(Configuration);OutputPath=$(BuildDir)\$(Configuration);$(Properties);$(CustomPropertiesForBuild);Environment=%(Environments.Identity);IsSetupBuild=true" 
+      Targets="Clean;Build" />
     <MSBuild
       Condition=" '%(Environments.Identity)'!='Development' And '$(IsDesktopBuild)'!='true' "
       Projects="$(SetupProjectFile)"
       Properties="Configuration=$(Configuration);OutputPath=$(BuildDir)\$(Configuration);$(Properties);$(CustomPropertiesForBuild);Environment=%(Environments.Identity);IsSetupBuild=true;DelaySign=false;AssemblyOriginatorKeyFile=$(StrongNameKeyPairPath)"
-      Targets="Clean;Build"
-      ToolsVersion="$(ToolsVersion)" />
+      Targets="Clean;Build" />
   </Target>
 
   <Target Name="CorePackageConfiguration">
     <MSBuild 
       Projects="$(MSBuildProjectFile)"
       Targets="CorePackageEnvironment"
-      Properties="SetupProjectFile=$(SetupProjectFile);Configuration=%(ConfigurationToBuild.FlavorToBuild)"
-      ToolsVersion="$(ToolsVersion)" />
+      Properties="SetupProjectFile=$(SetupProjectFile);Configuration=%(ConfigurationToBuild.FlavorToBuild)" />
   </Target>
 
   <Target Name="CorePackage" Condition=" '$(IsPackagedBuild)'=='true' ">
@@ -481,8 +447,7 @@
     <MSBuild
       Projects="$(MSBuildProjectFile)"
       Targets="CorePackageConfiguration"
-      Properties="SetupProjectFile=%(SetupProjectFiles.FullPath);BinFolder=%(SetupProjectFiles.Directory)bin;ObjFolder=%(SetupProjectFiles.Directory)obj"
-      ToolsVersion="$(ToolsVersion)" />
+      Properties="SetupProjectFile=%(SetupProjectFiles.FullPath);BinFolder=%(SetupProjectFiles.Directory)bin;ObjFolder=%(SetupProjectFiles.Directory)obj" />
     <!-- If 'DropLocationForBuild' not set, warn user. -->
     <Warning 
       Condition=" '$(IsDesktopBuild)'!='true' And '$(DropLocationForBuild)'=='' " 
@@ -518,17 +483,15 @@
       Text="- %(ConfigurationToBuild.FlavorToBuild)" />
     <MSBuild
       Projects="$(Solution)"
-      Targets="Clean"
-      Properties="Configuration=%(ConfigurationToBuild.FlavorToBuild)"
-      ToolsVersion="$(ToolsVersion)" />
+      Targets="Clean" 
+      Properties="Configuration=%(ConfigurationToBuild.FlavorToBuild)" />
   </Target>
   
   <Target Name="CleanSolution">
     <MSBuild 
       Projects="$(MSBuildProjectFile)" 
-      Targets="CleanSolutionConfiguration"
-      Properties="Solution=%(SolutionToBuild.Identity);IsAllConfigurationsBuild=true"
-      ToolsVersion="$(ToolsVersion)" />
+      Targets="CleanSolutionConfiguration" 
+      Properties="Solution=%(SolutionToBuild.Identity);IsAllConfigurationsBuild=true" />
     <ItemGroup>
       <!-- App.config files are not typically generated, all others are. -->
       <ItemsToDelete 
