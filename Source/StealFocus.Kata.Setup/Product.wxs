@@ -1,35 +1,126 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
-	<Product 
-    Id="603385b6-4050-4cb6-a1aa-32ed8332fbe3" 
-    Name="StealFocus.Kata.Setup" 
-    Language="1033" 
-    Version="1.0.0.0" 
-    Manufacturer="StealFocus.Kata.Setup" 
-    UpgradeCode="645e5e2d-64a5-47e8-b2f6-a29f42e10410">
-    
-		<Package InstallerVersion="200" Compressed="yes" />
+<Wix
+  xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <Product
+    Id="79A36C3C-DD37-42C7-9DF6-A5DDEA349DF5"
+    Name="StealFocus Kata $(var.BuildLabelNumber)"
+    Language="1033"
+    Version="$(var.VersionNumber)"
+    Manufacturer="StealFocus"
+    UpgradeCode="EBA4E88E-C84D-4034-8A5F-8DCA6639B4AB">
 
-		<Media Id="1" Cabinet="media1.cab" EmbedCab="yes" />
+    <Package InstallerVersion="200" Compressed="yes" />
 
-		<Directory Id="TARGETDIR" Name="SourceDir">
-			<Directory Id="ProgramFilesFolder">
-				<Directory Id="INSTALLLOCATION" Name="StealFocus.Kata.Setup">
-					<!-- TODO: Remove the comments around this Component element and the ComponentRef below in order to add resources to this installer. -->
-					<!-- <Component Id="ProductComponent" Guid="982e2655-4155-4e4a-8a87-def416880496"> -->
-						<!-- TODO: Insert files, registry keys, and other resources here. -->
-					<!-- </Component> -->
-				</Directory>
-			</Directory>
-		</Directory>
+    <Media Id="1" Cabinet="StealFocus.Kata.cab" EmbedCab="yes" />
 
-		<Feature Id="ProductFeature" Title="StealFocus.Kata.Setup" Level="1">
-			<!-- TODO: Remove the comments around this ComponentRef element and the Component above in order to add resources to this installer. -->
-			<!-- <ComponentRef Id="ProductComponent" /> -->
-			
-			<!-- Note: The following ComponentGroupRef is required to pull in generated authoring from project references. -->
-			<ComponentGroupRef Id="Product.Generated" />
-		</Feature>
-    
-	</Product>
+    <!-- Per machine (1), NOT per user (2) -->
+    <Property Id="ALLUSERS" Value="1" />
+
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="ProgramFilesFolder">
+        <Directory Id='MSBuild' Name='MSBuild'>
+          <Directory Id='MSBuild_StealFocus' Name='StealFocus'>
+            <Directory Id='MSBuild_StealFocus_Kata' Name='Kata'>
+              <Directory Id='MSBuild_StealFocus_Kata_v1.2' Name='v1.2'>
+                <Component Id='MSBuildScripts' Guid='{C2F7A3F1-D779-46AC-B99D-0C84482B6C3F}' KeyPath='yes'>
+                  <File
+                    Id='StealFocus.Kata.Build.targets'
+                    Name='StealFocus.Kata.Build.targets'
+                    Source='..\Artefacts\MSBuild\StealFocus.Kata.Build.targets' />
+                  <File
+                    Id='StealFocus.Kata.Project.Assembly.targets'
+                    Name='StealFocus.Kata.Project.Assembly.targets'
+                    Source='..\Artefacts\MSBuild\StealFocus.Kata.Project.Assembly.targets' />
+                  <File
+                    Id='StealFocus.Kata.Project.CSharp.targets'
+                    Name='StealFocus.Kata.Project.CSharp.targets'
+                    Source='..\Artefacts\MSBuild\StealFocus.Kata.Project.CSharp.targets' />
+                  <File
+                    Id='StealFocus.Kata.Project.targets'
+                    Name='StealFocus.Kata.Project.targets'
+                    Source='..\Artefacts\MSBuild\StealFocus.Kata.Project.targets' />
+                  <File
+                    Id='StealFocus.Kata.Project.VisualBasic.targets'
+                    Name='StealFocus.Kata.Project.VisualBasic.targets'
+                    Source='..\Artefacts\MSBuild\StealFocus.Kata.Project.VisualBasic.targets' />
+                  <File
+                    Id='StealFocus.Kata.Project.WiX.targets'
+                    Name='StealFocus.Kata.Project.WiX.targets'
+                    Source='..\Artefacts\MSBuild\StealFocus.Kata.Project.WiX.targets' />
+                  <File
+                    Id='StealFocus.Kata.targets'
+                    Name='StealFocus.Kata.targets'
+                    Source='..\Artefacts\MSBuild\StealFocus.Kata.targets' />
+                </Component>
+                <Directory Id='MSBuild_StealFocus_Kata_v1.2_MicrosoftSdcTasks' Name='MicrosoftSdcTasks'>
+                  <Component Id='MicrosoftSdcTasks' Guid='{AAF5FB34-286E-432A-8C82-A77074ACE852}' KeyPath='yes'>
+                    <File
+                      Id='Installing_and_Using_the_SDC_Tasks.pdf'
+                      Name='Installing and Using the SDC Tasks.pdf'
+                      Source='..\Artefacts\MSBuild\MicrosoftSdcTasks\Installing and Using the SDC Tasks.pdf' />
+                    <File
+                      Id='Microsoft.Sdc.BizTalkOM.dll'
+                      Name='Microsoft.Sdc.BizTalkOM.dll'
+                      Source='..\Artefacts\MSBuild\MicrosoftSdcTasks\Microsoft.Sdc.BizTalkOM.dll' />
+                    <File
+                      Id='Microsoft.Sdc.Common.tasks'
+                      Name='Microsoft.Sdc.Common.tasks'
+                      Source='..\Artefacts\MSBuild\MicrosoftSdcTasks\Microsoft.Sdc.Common.tasks' />
+                    <File
+                      Id='Microsoft.Sdc.Tasks.BizTalk.dll'
+                      Name='Microsoft.Sdc.Tasks.BizTalk.dll'
+                      Source='..\Artefacts\MSBuild\MicrosoftSdcTasks\Microsoft.Sdc.Tasks.BizTalk.dll' />
+                    <File
+                      Id='Microsoft.Sdc.Tasks.BizTalk.pdb'
+                      Name='Microsoft.Sdc.Tasks.BizTalk.pdb'
+                      Source='..\Artefacts\MSBuild\MicrosoftSdcTasks\Microsoft.Sdc.Tasks.BizTalk.pdb' />
+                    <File
+                      Id='Microsoft.Sdc.Tasks.dll'
+                      Name='Microsoft.Sdc.Tasks.dll'
+                      Source='..\Artefacts\MSBuild\MicrosoftSdcTasks\Microsoft.Sdc.Tasks.dll' />
+                    <File
+                      Id='Microsoft.Sdc.Tasks.Documentation.chm'
+                      Name='Microsoft.Sdc.Tasks.Documentation.chm'
+                      Source='..\Artefacts\MSBuild\MicrosoftSdcTasks\Microsoft.Sdc.Tasks.Documentation.chm' />
+                    <File
+                      Id='Microsoft.Sdc.Tasks.pdb'
+                      Name='Microsoft.Sdc.Tasks.pdb'
+                      Source='..\Artefacts\MSBuild\MicrosoftSdcTasks\Microsoft.Sdc.Tasks.pdb' />
+                    <File
+                      Id='Summarised_Change_List_for_Release_2.1.3155.0.pdf'
+                      Name='Summarised Change List for Release 2.1.3155.0.pdf'
+                      Source='..\Artefacts\MSBuild\MicrosoftSdcTasks\Summarised Change List for Release 2.1.3155.0.pdf' />
+                  </Component>
+                </Directory>
+              </Directory>
+            </Directory>
+          </Directory>
+        </Directory>
+        <Directory Id='StealFocus' Name='StealFocus'>
+          <Directory Id='StealFocus_Kata' Name='Kata'>
+            <Directory Id='StealFocus_Kata_Version1.2' Name='Version 1.2'>
+              <Component Id='Core' Guid='{BD36746E-A6EC-4E03-ABEF-25FA9F264441}' KeyPath='yes'>
+                <!-- License file -->
+                <File
+                  Id='LicenseFile'
+                  Name='StealFocus.Kata.License.rtf'
+                  Source='..\StealFocus.Kata.License.rtf' />
+              </Component>
+            </Directory>
+          </Directory>
+        </Directory>
+      </Directory>
+    </Directory>
+
+    <Feature Id="ProductFeature" Title="StealFocus Kata" Level="1">
+      <ComponentRef Id="Core" />
+      <ComponentRef Id="MSBuildScripts" />
+      <ComponentRef Id="MicrosoftSdcTasks" />
+    </Feature>
+
+    <UIRef Id="WixUI_Mondo" />
+
+    <UIRef Id="WixUI_ErrorProgressText" />
+
+  </Product>
 </Wix>

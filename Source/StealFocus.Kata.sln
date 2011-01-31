@@ -3,6 +3,39 @@ Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
 Project("{930C7802-8A8C-48F9-8165-68863BCCD9DD}") = "StealFocus.Kata.Setup", "StealFocus.Kata.Setup\StealFocus.Kata.Setup.wixproj", "{06DADB1C-2619-4816-B36A-683CE448B203}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Artefacts", "Artefacts", "{8B7C9D90-D572-471B-B73E-38D79F2E3DB9}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "MSBuild", "MSBuild", "{1B04F585-CB59-4D05-9657-5370C4CFB7A0}"
+	ProjectSection(SolutionItems) = preProject
+		Artefacts\MSBuild\StealFocus.Kata.Build.targets = Artefacts\MSBuild\StealFocus.Kata.Build.targets
+		Artefacts\MSBuild\StealFocus.Kata.Project.Assembly.targets = Artefacts\MSBuild\StealFocus.Kata.Project.Assembly.targets
+		Artefacts\MSBuild\StealFocus.Kata.Project.Assembly.targets.bak = Artefacts\MSBuild\StealFocus.Kata.Project.Assembly.targets.bak
+		Artefacts\MSBuild\StealFocus.Kata.Project.CSharp.targets = Artefacts\MSBuild\StealFocus.Kata.Project.CSharp.targets
+		Artefacts\MSBuild\StealFocus.Kata.Project.targets = Artefacts\MSBuild\StealFocus.Kata.Project.targets
+		Artefacts\MSBuild\StealFocus.Kata.Project.targets.bak = Artefacts\MSBuild\StealFocus.Kata.Project.targets.bak
+		Artefacts\MSBuild\StealFocus.Kata.Project.VisualBasic.targets = Artefacts\MSBuild\StealFocus.Kata.Project.VisualBasic.targets
+		Artefacts\MSBuild\StealFocus.Kata.Project.WiX.targets = Artefacts\MSBuild\StealFocus.Kata.Project.WiX.targets
+		Artefacts\MSBuild\StealFocus.Kata.targets = Artefacts\MSBuild\StealFocus.Kata.targets
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "MicrosoftSdcTasks", "MicrosoftSdcTasks", "{16A48474-1748-4FB6-A749-D34DF796F6B2}"
+	ProjectSection(SolutionItems) = preProject
+		Artefacts\MSBuild\MicrosoftSdcTasks\Installing and Using the SDC Tasks.pdf = Artefacts\MSBuild\MicrosoftSdcTasks\Installing and Using the SDC Tasks.pdf
+		Artefacts\MSBuild\MicrosoftSdcTasks\Microsoft.Sdc.BizTalkOM.dll = Artefacts\MSBuild\MicrosoftSdcTasks\Microsoft.Sdc.BizTalkOM.dll
+		Artefacts\MSBuild\MicrosoftSdcTasks\Microsoft.Sdc.Common.tasks = Artefacts\MSBuild\MicrosoftSdcTasks\Microsoft.Sdc.Common.tasks
+		Artefacts\MSBuild\MicrosoftSdcTasks\Microsoft.Sdc.Tasks.BizTalk.dll = Artefacts\MSBuild\MicrosoftSdcTasks\Microsoft.Sdc.Tasks.BizTalk.dll
+		Artefacts\MSBuild\MicrosoftSdcTasks\Microsoft.Sdc.Tasks.BizTalk.pdb = Artefacts\MSBuild\MicrosoftSdcTasks\Microsoft.Sdc.Tasks.BizTalk.pdb
+		Artefacts\MSBuild\MicrosoftSdcTasks\Microsoft.Sdc.Tasks.dll = Artefacts\MSBuild\MicrosoftSdcTasks\Microsoft.Sdc.Tasks.dll
+		Artefacts\MSBuild\MicrosoftSdcTasks\Microsoft.Sdc.Tasks.Documentation.chm = Artefacts\MSBuild\MicrosoftSdcTasks\Microsoft.Sdc.Tasks.Documentation.chm
+		Artefacts\MSBuild\MicrosoftSdcTasks\Microsoft.Sdc.Tasks.pdb = Artefacts\MSBuild\MicrosoftSdcTasks\Microsoft.Sdc.Tasks.pdb
+		Artefacts\MSBuild\MicrosoftSdcTasks\Summarised Change List for Release 2.1.3155.0.pdf = Artefacts\MSBuild\MicrosoftSdcTasks\Summarised Change List for Release 2.1.3155.0.pdf
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{B05B81AA-E348-4DC9-A06B-AA004802F4B3}"
+	ProjectSection(SolutionItems) = preProject
+		StealFocus.Kata.License.rtf = StealFocus.Kata.License.rtf
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x86 = Debug|x86
@@ -16,5 +49,9 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{1B04F585-CB59-4D05-9657-5370C4CFB7A0} = {8B7C9D90-D572-471B-B73E-38D79F2E3DB9}
+		{16A48474-1748-4FB6-A749-D34DF796F6B2} = {1B04F585-CB59-4D05-9657-5370C4CFB7A0}
 	EndGlobalSection
 EndGlobal

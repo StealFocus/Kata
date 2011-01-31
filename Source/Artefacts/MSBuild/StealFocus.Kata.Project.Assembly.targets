@@ -1,0 +1,215 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <!-- 
+    IMPORTANT - please do not customise this .targets file. Modifications will affect all Solutions using the software 
+    factory and maybe overridden by future updates to the software factory. Customise your build process by editing 
+    the *.targets/*.proj files in your solution.
+  -->
+
+  <PropertyGroup Condition=" '$(IsCommandLineBuild)'=='true' ">
+    <RebuildDependsOn>
+      BeforeRebuildCustom;
+      $(RebuildDependsOn);
+      AfterRebuildCustom
+    </RebuildDependsOn>
+    <BuildDependsOn>
+      CodeGeneration;
+      BeforeBuildCustom;
+      $(BuildDependsOn);
+      AfterBuildCustom
+    </BuildDependsOn>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(IsCommandLineBuild)'!='true' ">
+    <RebuildDependsOn>
+      CodeGeneration;
+      BeforeRebuildCustom;
+      $(RebuildDependsOn);
+      AfterRebuildCustom
+    </RebuildDependsOn>
+    <BuildDependsOn>
+      BeforeBuildCustom;
+      $(BuildDependsOn);
+      AfterBuildCustom
+    </BuildDependsOn>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <ResolveReferencesDependsOn>
+      BeforeResolveReferencesCustom;
+      $(ResolveReferencesDependsOn);
+      AfterResolveReferencesCustom
+    </ResolveReferencesDependsOn>
+    <ResGenDependsOn>
+      BeforeResGenCustom;
+      $(ResGenDependsOn);
+      AfterResGenCustom
+    </ResGenDependsOn>
+    <CompileDependsOn>
+      BeforeCompileCustom;
+      $(CompileDependsOn);
+      AfterCompileCustom
+    </CompileDependsOn>
+    <CleanDependsOn>
+      BeforeCleanCustom;
+      $(CleanDependsOn);
+      AfterCleanCustom
+    </CleanDependsOn>
+    <PublishDependsOn>
+      BeforePublishCustom;
+      $(PublishDependsOn);
+      AfterPublishCustom
+    </PublishDependsOn>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <ConfigurationFilesProcessedLocationPath>$(ProjectDir)obj\$(Configuration)\Config</ConfigurationFilesProcessedLocationPath>
+    <UseTempExtensionForTemporaryConfigurationFiles>true</UseTempExtensionForTemporaryConfigurationFiles>
+  </PropertyGroup>
+
+  <Target Name="GenerateAssemblyInfoFile">
+    <Time>
+      <Output
+        TaskParameter="Year"
+				PropertyName="Year" />
+    </Time>
+    <FileRegex
+      Condition=" Exists('$(AssemblyInfoCommonFilePath)') "
+      Files="$(AssemblyInfoCommonFilePath)"
+      RegularExpression="\[assembly: AssemblyConfiguration\(&quot;$(BuildLabel) $(Configuration)&quot;\)\]" >
+      <Output
+        TaskParameter = "MatchCount"
+        PropertyName="AssemblyConfigurationMatches" />
+    </FileRegex>
+    <FileRegex
+      Condition=" Exists('$(AssemblyInfoCommonFilePath)') "
+      Files="$(AssemblyInfoCommonFilePath)"
+      RegularExpression="\[assembly: AssemblyVersion\(&quot;$(VersionNumber)&quot;\)\]">
+      <Output
+        TaskParameter = "MatchCount"
+        PropertyName="AssemblyVersionMatches" />
+    </FileRegex>
+    <Message
+      Condition="!($(AssemblyConfigurationMatches)== '1' And $(AssemblyVersionMatches)== '1')"
+      Importance="high"
+      Text="Regenerating 'AssemblyInfoCommon.cs' under 'Source' directory (for project $(MSBuildProjectName)), this will affect all other projects as 'AssemblyInfoCommon.cs' is shared." />
+    <MSBuild.Community.Tasks.AssemblyInfo
+      Condition="!($(AssemblyConfigurationMatches)== '1' And $(AssemblyVersionMatches)== '1')"
+      AssemblyCompany="$(CompanyName)"
+			AssemblyConfiguration="$(BuildLabel) $(Configuration)"
+			AssemblyCopyright="Copyright © $(CompanyName) $(Year)"
+			AssemblyCulture=""
+			AssemblyFileVersion="$(BuildLabelNumber)"
+			AssemblyInformationalVersion="$(BuildLabelNumber)"
+      AssemblyProduct="$(ProductName)"
+			AssemblyTrademark="$(CompanyName)"
+			AssemblyVersion="$(VersionNumber)"
+			CodeLanguage="$(CodeLanguage)"
+			OutputFile="$(AssemblyInfoCommonFilePath)"  />
+  </Target>
+
+  <Target Name="CopyConfigurationFilesToProjectDir" DependsOnTargets="ProcessConfigurationFiles">
+    <ItemGroup>
+      <CommonProcessedConfigurationFiles Include="$(ConfigurationFilesProcessedLocationWithEnvironmentSuffixPath)\*.*" />
+      <ProjectProcessedConfigurationFiles Include="$(ConfigurationFilesProcessedLocationWithEnvironmentSuffixPath)\$(MSBuildProjectName)\*.*" />
+    </ItemGroup>
+    <Copy
+      SourceFiles="@(CommonProcessedConfigurationFiles)"
+      DestinationFiles="@(CommonProcessedConfigurationFiles->'$(MSBuildProjectDirectory)\%(RecursiveDir)%(Filename)')" />
+    <Copy
+      SourceFiles="@(ProjectProcessedConfigurationFiles)"
+      DestinationFiles="@(ProjectProcessedConfigurationFiles->'$(MSBuildProjectDirectory)\%(RecursiveDir)%(Filename)')" />
+  </Target>
+
+  <Target Name="RestoreBinariesToWebProjectBin" Condition=" '$(IsWebProject)'=='true' And '$(OutputPath)'!='bin\$(Configuration)' And '$(Configuration)'=='Debug' ">
+    <ItemGroup>
+      <WebProjectBinFolderFiles Include="$(OutputPath)\_PublishedWebsites\$(MSBuildProjectName)\bin\**\*.*" />
+    </ItemGroup>
+    <Copy
+      SourceFiles="@(WebProjectBinFolderFiles)"
+      DestinationFiles="@(WebProjectBinFolderFiles->'$(ProjectDir)bin\%(RecursiveDir)%(Filename)%(Extension)')" />
+  </Target>
+
+  <Target Name="BeforeBuild" DependsOnTargets="GenerateAssemblyInfoFile">
+    <Message
+      Condition=" '$(IsCommandLineBuild)'=='true' "
+      Importance="high"
+      Text="Project is $(MSBuildProjectName) ($(Configuration)|$(Platform))." />
+    <Message
+      Condition=" '$(IsCommandLineBuild)'=='true' "
+      Importance="high"
+      Text="Environment is '$(Environment)'." />
+    <Message Text="BuildLabel ('$(BuildLabel)') plus Configuration '('$(Configuration)')' applied as 'AssemblyConfiguration' i.e. '$(BuildLabel) $(Configuration)'." />
+    <Message Text="BuildLabelNumber ('$(BuildLabelNumber)') applied as 'AssemblyFileVersion' and 'AssemblyInformationalVersion'." />
+    <Message Text="VersionNumber ('$(VersionNumber)') applied as 'AssemblyVersion'." />
+    <XmlFileChecker
+      Condition=" ('$(IsCommandLineBuild)'=='true' Or '$(IsDesktopBuild)'!='true') And '$(Environment)'=='Development' "
+      FilesToCheck="@(XmlFileCheckerFilesToCheck)"
+      XmlFileCheckerConfigurationFilePath="$(XmlFileCheckerConfigurationFilePath)" />
+    <Message
+      Condition=" '$(IsDependantOnConfigurationFiles)'!='true' "
+      Importance="high"
+      Text="Project not dependent on configuration files." />
+    <PropertyGroup Condition=" ('$(IsCommandLineBuild)'=='true' Or '$(IsDesktopBuild)'!='true') And '$(IsSetupBuild)'!='true' ">
+      <ProcessConfigurationFiles>true</ProcessConfigurationFiles>
+    </PropertyGroup>
+    <Message
+      Condition=" '$(ProcessConfigurationFiles)'=='true' And '$(IsDependantOnConfigurationFiles)'=='true' "
+      Importance="high"
+      Text="Processing configuration files (applying Dictionaries to Templates and copying processed files to project directory)." />
+    <!-- TO DO: Check if files exist before skipping. -->
+    <Message
+      Condition=" '$(ProcessConfigurationFiles)'!='true' And '$(IsDependantOnConfigurationFiles)'=='true' "
+      Importance="high"
+      Text="Skipping processing of configuration files for this project (building setup projects only)." />
+    <CallTarget
+      Condition=" '$(ProcessConfigurationFiles)'=='true' "
+      Targets="CopyConfigurationFilesToProjectDir" />
+  </Target>
+
+  <Target Name="AfterBuild" DependsOnTargets="RestoreBinariesToWebProjectBin">
+    <!-- This "AspNetCompiler" is here for ASP.NET MVC Projects. -->
+    <AspNetCompiler
+      Condition=" '$(MvcBuildViews)'=='true' "
+      VirtualPath="temp"
+      PhysicalPath="$(ProjectDir)\" />
+  </Target>
+
+  <Target Name="BeforeRebuild" DependsOnTargets="GenerateAssemblyInfoFile">
+    <XmlFileChecker
+      Condition=" '$(IsDesktopBuild)'=='true' And '$(Environment)'=='Development' "
+      FilesToCheck="@(XmlFileCheckerFilesToCheck)"
+      XmlFileCheckerConfigurationFilePath="$(XmlFileCheckerConfigurationFilePath)" />
+    <PropertyGroup Condition=" '$(IsDesktopBuild)'=='true' And '$(IsSetupBuild)'!='true' ">
+      <ProcessConfigurationFiles>true</ProcessConfigurationFiles>
+    </PropertyGroup>
+    <!-- TO DO: Check if files exist before skipping. -->
+    <CallTarget
+      Condition=" '$(ProcessConfigurationFiles)'=='true' "
+      Targets="CopyConfigurationFilesToProjectDir" />
+  </Target>
+
+  <Target Name="AfterRebuild" />
+
+  <Target Name="BeforeResolveReferences" />
+
+  <Target Name="AfterResolveReferences" />
+
+  <Target Name="BeforeResGen" />
+
+  <Target Name="AfterResGen" />
+
+  <Target Name="BeforeCompile" />
+
+  <Target Name="AfterCompile" />
+
+  <Target Name="BeforeClean" />
+
+  <Target Name="AfterClean" />
+
+  <Target Name="BeforePublish" />
+
+  <Target Name="AfterPublish" />
+
+</Project>

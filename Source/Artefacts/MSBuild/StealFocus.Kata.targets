@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <!-- 
+    IMPORTANT - please do not customise this .targets file. Modifications will affect all Solutions using the software 
+    factory and maybe overridden by future updates to the software factory. Customise your build process by editing 
+    the *.targets/*.proj files in your solution.
+  -->
+
+  <Import Project="$(MSBuildExtensionsPath)\ExtensionPack\MSBuild.ExtensionPack.tasks" />
+  
+  <Import Project="$(MSBuildExtensionsPath)\MSBuildCommunityTasks\MSBuild.Community.Tasks.Targets" />
+
+  <Import Project="$(MSBuildExtensionsPath)\StealFocus\MSBuild\v1.0\StealFocus.MSBuild.Targets" />
+
+  <PropertyGroup>
+    <DefaultBuildOrVersionNumber>0.0.0.0</DefaultBuildOrVersionNumber>
+  </PropertyGroup>
+
+  <!-- 
+    BuildLabel example - "Trunk.1.0.90101.0" or "Branch.UAT.1.0.90101.0", where the Build number is YMMdd.
+  -->
+  <PropertyGroup Condition=" '$(BuildLabel)'=='' ">
+    <BuildLabel>Branch.Unknown.$(DefaultBuildOrVersionNumber)</BuildLabel>
+  </PropertyGroup>
+
+  <!-- 
+    BuildLabelNumber example - "1.0.90101.0", where the Build number is YMMdd.
+  -->
+  <PropertyGroup Condition=" '$(BuildLabelNumber)'=='' ">
+    <BuildLabelNumber>$(DefaultBuildOrVersionNumber)</BuildLabelNumber>
+  </PropertyGroup>
+
+  <!-- 
+    VersionNumber example - "1.0.9001.1", for Build number (3rd component), 1st Feb 2009 is "9032" as 31 days in 
+    January. 
+  -->
+  <PropertyGroup Condition=" '$(VersionNumber)'=='' ">
+    <VersionNumber>$(DefaultBuildOrVersionNumber)</VersionNumber>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(IsDesktopBuild)'=='' ">
+    <IsDesktopBuild>true</IsDesktopBuild>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(IsCommandLineBuild)'=='' ">
+    <IsCommandLineBuild>false</IsCommandLineBuild>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(IsInitialiseEnvironmentBuild)'=='' ">
+    <IsInitialiseEnvironmentBuild>false</IsInitialiseEnvironmentBuild>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(IsAllConfigurationsBuild)'=='' ">
+    <IsAllConfigurationsBuild>false</IsAllConfigurationsBuild>
+  </PropertyGroup>
+  
+  <PropertyGroup Condition=" '$(IsDocumentationBuild)'=='' ">
+    <IsDocumentationBuild>false</IsDocumentationBuild>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(IsPackagedBuild)'=='' ">
+    <IsPackagedBuild>false</IsPackagedBuild>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(IsDeploymentBuild)'=='' ">
+    <IsDeploymentBuild>false</IsDeploymentBuild>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(DatabaseServerName)'=='' ">
+    <DatabaseServerName>.</DatabaseServerName>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(ConfigurationForDocumentationBuild)'=='' ">
+    <ConfigurationForDocumentationBuild>Release</ConfigurationForDocumentationBuild>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" !Exists('$(SYSTEMDRIVE)\Program Files (x86)') ">
+    <Is32bit>true</Is32bit>
+    <Is64bit>false</Is64bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" Exists('$(SYSTEMDRIVE)\Program Files (x86)') ">
+    <Is32bit>false</Is32bit>
+    <Is64bit>true</Is64bit>
+  </PropertyGroup>
+
+</Project>

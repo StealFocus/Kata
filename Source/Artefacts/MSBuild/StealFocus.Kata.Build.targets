@@ -1,0 +1,550 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="SolutionBuild">
+
+  <!-- 
+    IMPORTANT - please do not customise this .targets file. Modifications will affect all Solutions using the software 
+    factory and maybe overridden by future updates to the software factory. Customise your build process by editing 
+    the *.targets/*.proj files in your solution.
+  -->
+
+  <Import Project="MicrosoftSdcTasks\Microsoft.Sdc.Common.tasks"/>
+
+  <PropertyGroup Condition=" '$(IsDeploymentBuild)'=='true' ">
+    <DeployDependsOn>
+      BeforeDeployCustom;
+      CoreDeploy;
+      AfterDeployCustom
+    </DeployDependsOn>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(IsInitialiseEnvironmentBuild)'=='true' ">
+    <InitialiseEnvironmentDependsOn>
+      BeforeInitialiseEnvironmentCustom;
+      CoreInitialiseEnvironment;
+      AfterInitialiseEnvironmentCustom
+    </InitialiseEnvironmentDependsOn>
+  </PropertyGroup>
+  
+  <PropertyGroup>
+    <InitialiseBuildDependsOn>
+      BeforeInitialiseBuildCustom;
+      CoreInitialiseBuild;
+      AfterInitialiseBuildCustom
+    </InitialiseBuildDependsOn>
+    <DatabaseBuildDependsOn>
+      BeforeDatabaseBuildCustom;
+      CoreDatabaseBuild;
+      AfterDatabaseBuildCustom
+    </DatabaseBuildDependsOn>
+    <SolutionCompileDependsOn>
+      BeforeSolutionCompileCustom;
+      CoreSolutionCompile;
+      AfterSolutionCompileCustom
+    </SolutionCompileDependsOn>
+    <RunTestsDependsOn>
+      BeforeRunTestsCustom;
+      CoreRunTests;
+      AfterRunTestsCustom
+    </RunTestsDependsOn>
+    <BuildDocumentationDependsOn>
+      BeforeBuildDocumentationCustom;
+      CoreBuildDocumentation;
+      AfterBuildDocumentationCustom
+    </BuildDocumentationDependsOn>
+    <PackageDependsOn>
+      BeforePackageCustom;
+      CorePackage;
+      AfterPackageCustom
+    </PackageDependsOn>
+    <SolutionBuildDependsOn>
+      $(InitialiseBuildDependsOn);
+      $(InitialiseEnvironmentDependsOn);
+      $(DatabaseBuildDependsOn);
+      $(SolutionCompileDependsOn);
+      $(RunTestsDependsOn);
+      $(BuildDocumentationDependsOn);
+      $(PackageDependsOn);
+      $(DeployDependsOn)
+    </SolutionBuildDependsOn>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(BuildDir)' == '' ">
+    <BuildDir>..\..\Build</BuildDir>
+  </PropertyGroup>
+
+  <Target Name="CoreInitialiseBuild">
+    <Message
+      Importance="high"
+      Text="Initialising Build." />
+    <!-- Delete any old Build directory. -->
+    <Message
+      Condition=" Exists('$(BuildDir)') " 
+      Importance="high"
+      Text="Deleting old Build directory." />
+    <RemoveDir
+      Condition=" Exists('$(BuildDir)') "
+      Directories="$(BuildDir)" />
+    <!-- Delete any old test results. -->
+    <PropertyGroup>
+      <TestResultsFolderPath>..\TestResults</TestResultsFolderPath>
+    </PropertyGroup>
+    <Message
+      Condition=" Exists('$(TestResultsFolderPath)') "
+      Importance="high"
+      Text="Deleting old test results." />
+    <RemoveDir
+      Condition=" Exists('$(TestResultsFolderPath)') "
+      Directories="$(TestResultsFolderPath)" />
+  </Target>
+
+  <Target Name="DeleteAppPool">
+    <Microsoft.Sdc.Tasks.Web.AppPool.Exists
+      AppPoolName="$(AppPoolName)">
+      <Output
+        TaskParameter="DoesExist"
+        PropertyName="AppPoolExists"/>
+    </Microsoft.Sdc.Tasks.Web.AppPool.Exists>
+    <MSBuild.ExtensionPack.Web.Iis6AppPool
+      TaskAction="Delete" 
+      Name="$(AppPoolName)" />
+  </Target>
+
+  <Target Name="SetupScriptMaps">
+    <WebDirectoryScriptMap
+      Condition=" '%(WebApplicationScriptMap.Identity)'!='' "
+      Extension="%(WebApplicationScriptMap.Identity)"
+      MapToAspNet="%(WebApplicationScriptMap.MapToAspNet)"
+      Verbs="%(WebApplicationScriptMap.Verbs)"
+      VerifyFileExists="%(WebApplicationScriptMap.VerifyFileExists)"
+      VirtualDirectoryName="$(VirtualDirectoryName)" />
+  </Target>
+
+  <!-- TO DO: Does this work on Windows 2008? -->
+  <Target Name="SetupIis">
+    <Message
+      Importance="high"
+      Text="Setting up IIS." />
+    <!-- Delete Virtual Directories. -->
+    <Message
+      Importance="high"
+      Text="Deleting the following Virtual Directories:" />
+    <Message
+      Condition=" '%(WebApplicationProject.Identity)'!='' "
+      Importance="high"
+      Text="- %(WebApplicationProject.Identity)" />
+    <Message
+      Condition=" '%(WebApplicationProject.Identity)'=='' "
+      Importance="high"
+      Text="- (None configured)" />
+    <Microsoft.Sdc.Tasks.Web.WebSite.DeleteVirtualDirectory
+      Condition=" '%(WebApplicationProject.Identity)'!='' "
+      VirtualDirectoryName="%(WebApplicationProject.Identity)"
+      WebSiteName="%(WebApplicationProject.WebSiteName)" />
+    <!-- Delete AppPools.  -->
+    <Message
+      Importance="high"
+      Text="Deleting the following AppPools:" />
+    <Message
+      Condition=" '%(WebApplicationProject.Identity)'!='' "
+      Importance="high"
+      Text="- %(WebApplicationProject.Identity)" />
+    <Message
+      Condition=" '%(WebApplicationProject.Identity)'=='' "
+      Importance="high"
+      Text="- (None configured)" />
+    <MSBuild
+      Condition=" '%(WebApplicationProject.Identity)'!='' "
+      Projects="$(MSBuildProjectFile)"
+      Targets="DeleteAppPool"
+      Properties="AppPoolName=%(WebApplicationProject.Identity)"
+      ToolsVersion="$(ToolsVersion)" />
+    <!-- Add AppPool Service Accounts to Local Groups.  -->
+    <Message
+      Importance="high"
+      Text="Adding the following AppPool Service Accounts to the required Local Groups:" />
+    <Message
+      Condition=" '%(WebApplicationProject.AppPoolUsername)'!='' "
+      Importance="high"
+      Text="- '%(WebApplicationProject.AppPoolUserDomain)\%(WebApplicationProject.AppPoolUsername)'." />
+    <Message
+      Condition=" '%(WebApplicationProject.Identity)'=='' "
+      Importance="high"
+      Text="- (None configured)" />
+    <MSBuild.ExtensionPack.Computer.ActiveDirectory TaskAction="CheckGroupExists" User="IIS_IUSRS">
+      <Output TaskParameter="Exists" PropertyName="IisIusersWpgExists"/>
+    </MSBuild.ExtensionPack.Computer.ActiveDirectory>
+    <ActiveDirectory.Group.AddUser
+      Condition=" '%(WebApplicationProject.AppPoolUsername)'!='' And '$(IisIusersWpgExists)'=='True' "
+      UserName="%(WebApplicationProject.AppPoolUsername)"
+      UserDomain="%(WebApplicationProject.AppPoolUserDomain)"
+      GroupName="IIS_IUSRS"
+      EnsureUserIsInGroup="true" />
+    <MSBuild.ExtensionPack.Computer.ActiveDirectory TaskAction="CheckGroupExists" User="IIS_WPG">
+      <Output TaskParameter="Exists" PropertyName="IisWpgExists"/>
+    </MSBuild.ExtensionPack.Computer.ActiveDirectory>
+    <ActiveDirectory.Group.AddUser
+      Condition=" '%(WebApplicationProject.AppPoolUsername)'!='' And '$(IisWpgExists)'=='True' "
+      UserName="%(WebApplicationProject.AppPoolUsername)"
+      UserDomain="%(WebApplicationProject.AppPoolUserDomain)"
+      GroupName="IIS_WPG"
+      EnsureUserIsInGroup="true" />
+    <!-- Create AppPools. -->
+    <Message
+      Importance="high"
+      Text="Creating the following AppPools:" />
+    <Message
+      Condition=" '%(WebApplicationProject.Identity)'!='' And '%(WebApplicationProject.IdentityType)'!='SpecifiedUserAccount' "
+      Importance="high"
+      Text="- %(WebApplicationProject.Identity) (%(WebApplicationProject.IdentityType))" />
+    <Message
+      Condition=" '%(WebApplicationProject.Identity)'!='' And '%(WebApplicationProject.AppPoolUserDomain)'!='' "
+      Importance="high"
+      Text="- %(WebApplicationProject.Identity) (%(WebApplicationProject.AppPoolUserDomain)\%(WebApplicationProject.AppPoolUsername))" />
+    <Message
+      Condition=" '%(WebApplicationProject.Identity)'=='' "
+      Importance="high"
+      Text="- (None configured)" />
+    <Microsoft.Sdc.Tasks.Web.AppPool.Create
+      Condition=" '%(WebApplicationProject.Identity)'!='' "
+      AppPoolName="%(WebApplicationProject.Identity)"
+      IdentityType="%(WebApplicationProject.IdentityType)"
+      Identity="%(WebApplicationProject.AppPoolUsername)"
+      Password="%(WebApplicationProject.AppPoolPassword)" />
+    <!-- Create Virtual Directories. -->
+    <Message
+      Importance="high"
+      Text="Creating the following Virtual Directories:" />
+    <Message
+      Condition=" '%(WebApplicationProject.Identity)'!='' "
+      Importance="high"
+      Text="- %(WebApplicationProject.Identity)" />
+    <Message
+      Condition=" '%(WebApplicationProject.Identity)'=='' "
+      Importance="high"
+      Text="- (None configured)" />
+    <Microsoft.Sdc.Tasks.Web.WebSite.CreateVirtualDirectory
+      Condition=" '%(WebApplicationProject.Identity)'!='' "
+      AppCreate="true"
+      AppPoolID="%(WebApplicationProject.Identity)"
+      AuthFlags="%(WebApplicationProject.AuthFlags)"
+      Path="%(WebApplicationProject.ProjectDir)"
+      VirtualDirectoryName="%(WebApplicationProject.Identity)"
+      WebAppName="%(WebApplicationProject.Identity)"
+      WebSiteName="%(WebApplicationProject.WebSiteName)" />
+    <!-- Register ASP.NET version. -->
+    <!-- TO DO: Sort these paths out, NB different runtimes. -->
+    <PropertyGroup Condition=" '$(Is32bit)'=='true' ">
+      <AspNetRegIisPath>%systemdrive%\WINDOWS\Microsoft.NET\Framework\v2.0.50727\aspnet_regiis.exe</AspNetRegIisPath>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Is64bit)'=='true' ">
+      <AspNetRegIisPath>%systemdrive%\WINDOWS\Microsoft.NET\Framework64\v2.0.50727\aspnet_regiis.exe</AspNetRegIisPath>
+    </PropertyGroup>
+    <Message
+      Importance="high"
+      Text="Registering correct ASP.NET version for Virtual Directories." />
+    <Exec
+      Condition=" '%(WebApplicationProject.Identity)'!='' "
+      Command='"$(AspNetRegIisPath)" -s W3SVC/1/ROOT/%(WebApplicationProject.Identity)' />
+    <!-- SetupScriptMaps -->
+    <Message
+      Importance="high"
+      Text="Registering additional script maps (for all Virtual Directories related to this solution):" />
+    <Message
+      Condition=" '%(WebApplicationScriptMap.Identity)'!='' "
+      Importance="high"
+      Text="- %(WebApplicationScriptMap.Identity)" />
+    <Message
+      Condition=" '%(WebApplicationScriptMap.Identity)'=='' "
+      Importance="high"
+      Text="- (None configured)" />
+    <MSBuild
+      Condition=" '%(WebApplicationProject.Identity)'!='' "
+      Projects="$(MSBuildProjectFile)"
+      Targets="SetupScriptMaps"
+      Properties="VirtualDirectoryName=%(WebApplicationProject.Identity)"
+      ToolsVersion="$(ToolsVersion)" />
+  </Target>
+
+  <Target Name="CoreInitialiseEnvironment" DependsOnTargets="SetupIis">
+    <Message
+      Importance="high"
+      Text="Initialising environment." />
+    <!-- 
+      These MakeDir steps are here to ensure the directories are created. This will not exist if you don't 
+      have the C++ components of Visual Studio installed which can cause problems with MSBuild in some 
+      situations. The easiest solution is to create it here if it does not exist.
+    -->
+    <!-- TO DO: Sort out for 64-bit -->
+    <PropertyGroup>
+      <SixPointZeroSdkLibPath>$(SYSTEMDRIVE)\Program Files\Microsoft SDKs\Windows\v6.0A\Lib</SixPointZeroSdkLibPath>
+      <SixPointOneSdkLibPath>$(SYSTEMDRIVE)\Program Files\Microsoft SDKs\Windows\v6.1\Lib</SixPointOneSdkLibPath>
+    </PropertyGroup>
+    <MakeDir
+      Condition=" !Exists('$(SixPointZeroSdkLibPath)') "
+      Directories="$(SixPointZeroSdkLibPath)" />
+    <MakeDir
+      Condition=" !Exists('$(SixPointOneSdkLibPath)') "
+      Directories="$(SixPointOneSdkLibPath)" />
+    <!-- 
+      Add Strong Name Verification Skipping entry.
+    -->
+    <!-- TO DO: Also cater for SDK 7.0 (base on "ToolsVersion" property) -->
+    <PropertyGroup>
+      <SixPointZeroSdkBinPath>$(SYSTEMDRIVE)\Program Files\Microsoft SDKs\Windows\v6.0A\Bin</SixPointZeroSdkBinPath>
+      <SixPointOneSdkBinPath>$(SYSTEMDRIVE)\Program Files\Microsoft SDKs\Windows\v6.1\Bin</SixPointOneSdkBinPath>
+    </PropertyGroup>
+    <Message
+      Importance="high"
+      Text="Adding Strong Name Verification Skipping Entry for Public Key Token '$(StrongNamePublicKeyToken)' against .NET Runtime $(RuntimeVersion)." />
+    <Message
+      Importance="high" 
+      Text="For 32-bit processes." />
+    <Exec
+      Condition=" Exists('$(SixPointOneSdkBinPath)') "
+      Command='"$(SixPointOneSdkBinPath)\sn.exe" -Vr *,$(StrongNamePublicKeyToken)'  />
+    <Exec
+      Condition=" Exists('$(SixPointZeroSdkBinPath)') And !Exists('$(SixPointOneSdkBinPath)') "
+      Command='"$(SixPointZeroSdkBinPath)\sn.exe" -Vr *,$(StrongNamePublicKeyToken)'  />
+    <Message 
+      Condition=" '$(Is64bit)'=='true' "
+      Importance="high"
+      Text="For 64-bit processes." />
+    <Exec
+      Condition=" '$(Is64bit)'=='true' And Exists('$(SixPointOneSdkBinPath)') "
+      Command='"$(SixPointOneSdkBinPath)\x64\sn.exe" -Vr *,$(StrongNamePublicKeyToken)'  />
+    <Exec
+      Condition=" '$(Is64bit)'=='true' And Exists('$(SixPointZeroSdkBinPath)') And !Exists('$(SixPointOneSdkBinPath)') "
+      Command='"$(SixPointZeroSdkBinPath)\x64\sn.exe" -Vr *,$(StrongNamePublicKeyToken)'  />
+    <!--
+      Perform IIS Reset so that the Strong Name verification skipping entry is picked up.
+    -->
+    <Message
+      Condition=" '$(IsDesktopBuild)'=='true' "
+      Importance="high"
+      Text="Performing IIS Reset so that the Strong Name verification skipping entry is picked up by IIS. Note that this operation is only performed for local builds, the build server uses fully signed assemblies so no IIS Reset required on build server." />
+    <Exec
+      Condition=" '$(IsDesktopBuild)'=='true' "
+      Command="iisreset" />
+    <!-- 
+      Create Event Log source(s). 
+    -->
+    <Message
+      Importance="high"
+      Text="Setting up the following Event Log sources:" />
+    <Message
+      Condition=" '%(EventLogSource.Identity)'!='' "
+      Importance="high"
+      Text="- $(EventLogName)\%(EventLogSource.Identity)" />
+    <Message
+      Condition=" '%(EventLogSource.Identity)'=='' "
+      Importance="high"
+      Text="- (None configured)" />
+    <RegistryWrite
+      Condition=" '%(EventLogSource.Identity)'!= '' "
+      KeyName="HKEY_LOCAL_MACHINE\SYSTEM\ControlSet001\Services\Eventlog\$(EventLogName)\%(EventLogSource.Identity)"
+			ValueName="EventMessageFile"
+			Value="$(systemdrive)\Windows\Microsoft.NET\Framework\v2.0.50727\EventLogMessages.dll" />
+  </Target>
+
+  <ItemGroup>
+    <DatabaseProject
+      Include="..\**\*.dbproj" />
+  </ItemGroup>
+  
+  <Target Name="CoreDatabaseBuild">
+    <!-- Drop database(s) -->
+    <Microsoft.Sdc.Tasks.Sql.Execute
+      Condition=" '%(DatabaseProject.Identity)'!='' "
+      ServerName="$(DatabaseServerName)"
+      DatabaseName="master"
+      Sql="IF EXISTS (SELECT * FROM master..sysdatabases WHERE name = N'%(DatabaseProject.Filename)') BEGIN DROP DATABASE [%(DatabaseProject.Filename)] END"
+      CommandTimeout="30" />
+    <!-- Create database(s) -->
+    <MSBuild
+      Condition=" '%(DatabaseProject.Identity)'!='' "
+      Projects="%(DatabaseProject.FullPath)"
+      Targets="Rebuild;Deploy"
+      ToolsVersion="$(ToolsVersion)" />
+  </Target>
+
+  <Target Name="CoreSolutionCompileConfigurationAndPackageSharePointSolutions">
+    <MSBuild
+      Condition=" '$(IsDesktopBuild)'=='true' "
+      Projects="$(Solution)"
+      Properties="Configuration=$(Configuration);OutputPath=$(OutputPath);$(Properties);$(CustomPropertiesForBuild)"
+      Targets="$(Targets)"
+      ToolsVersion="$(ToolsVersion)" />
+    <MSBuild
+      Condition=" '$(IsDesktopBuild)'!='true' "
+      Projects="$(Solution)"
+      Properties="Configuration=$(Configuration);OutputPath=$(OutputPath);$(Properties);$(CustomPropertiesForBuild);DelaySign=false;AssemblyOriginatorKeyFile=$(StrongNameKeyPairPath)"
+      Targets="$(Targets)"
+      ToolsVersion="$(ToolsVersion)" />
+    <!-- For some reason we have to delete the "pkg" folders in the SharePoint project folders else the build fails. -->
+    <RemoveDir Directories="%(SharePointProject.Directory)\pkg" />
+    <MSBuild
+      Condition=" '%(SharePointProject.Identity)'!='' And '$(IsDesktopBuild)'=='true' "
+      Projects="%(SharePointProject.FullPath)"
+      Properties="Configuration=$(Configuration);OutputPath=$(OutputPath);$(Properties);$(CustomPropertiesForBuild)"
+      Targets="Package"
+      ToolsVersion="$(ToolsVersion)" />
+    <MSBuild
+      Condition=" '%(SharePointProject.Identity)'!='' And '$(IsDesktopBuild)'!='true' "
+      Projects="%(SharePointProject.FullPath)"
+      Properties="Configuration=$(Configuration);OutputPath=$(OutputPath);$(Properties);$(CustomPropertiesForBuild);DelaySign=false;AssemblyOriginatorKeyFile=$(StrongNameKeyPairPath)"
+      Targets="Package"
+      ToolsVersion="$(ToolsVersion)" />
+  </Target>
+  
+  <Target Name="CoreSolutionCompileConfiguration">
+    <MSBuild
+      Projects="$(MSBuildProjectFile)"
+      Properties="Solution=$(Solution);Targets=$(Targets);Properties=$(Properties);Configuration=%(ConfigurationToBuild.FlavorToBuild);OutputPath=$(BuildDir)\%(ConfigurationToBuild.FlavorToBuild);"
+      Targets="CoreSolutionCompileConfigurationAndPackageSharePointSolutions"
+      ToolsVersion="$(ToolsVersion)" />
+  </Target>
+
+  <Target Name="CoreSolutionCompile">
+    <Message
+      Importance="high"
+      Text="Compiling solution." />
+    <MSBuild
+      Projects="$(MSBuildProjectFile)"
+      Properties="Solution=%(SolutionToBuild.Identity);BuildDir=$(BuildDir);Properties=%(SolutionToBuild.Properties);Targets=%(SolutionToBuild.Targets);"
+      Targets="CoreSolutionCompileConfiguration"
+      ToolsVersion="$(ToolsVersion)" />
+  </Target>
+
+  <Target Name="CoreRunTests">
+    <Message
+      Importance="high" 
+      Text="Running tests." />
+    <!-- "ToolsVersion" property applied to "FrameworkVersion" attribute intentionally. -->
+    <StealFocus.MSBuild.Tasks.MSTest
+      BinariesRootPath="$(BuildDir)" 
+      FlavorToBuild="%(ConfigurationToBuild.FlavorToBuild)" 
+      FrameworkVersion="$(ToolsVersion)"
+      TestContainerSearchFilters="$(MSTestTestContainerSearchFilters)" 
+      TestRunConfigFilePath="$(MSTestTestRunConfigFilePath)" 
+      WorkingDirectory="..\" />
+  </Target>
+
+  <Target Name="CoreBuildDocumentation" Condition=" '$(IsDocumentationBuild)'=='true' ">
+    <Message
+      Importance="high"
+      Text="Building documentation." />
+    <MSBuild
+      Projects="$(DocumentationProjectFile)"
+      Properties="OutDir=$(BuildDir)\$(ConfigurationForDocumentationBuild);OutputPath=$(BuildDir)\Documentation"
+      ToolsVersion="$(ToolsVersion)" />
+    <!-- 
+      TO DO: Does "HelpFileVersion" do anything if supplied? 
+      Properties="Configuration=Release;Platform=AnyCPU;OutDir=$(BinariesRoot)\Release;HelpFileVersion=$(BuildLabelNumberComponent);"
+    -->
+  </Target>
+
+  <Target Name="CorePackageEnvironment">
+    <!-- 
+      "Development" configuration built during main Solution build so skip here.
+      "Clean" target called to guarantee MSI is re-generated to ensure the configuration files for the correct environment are packaged inside.
+    -->
+    <MSBuild
+      Condition=" '%(Environments.Identity)'!='Development' And '$(IsDesktopBuild)'=='true' And '%(Environments.IsIncludedInDesktopBuild)'=='true' "
+      Projects="$(SetupProjectFile)"
+      Properties="Configuration=$(Configuration);OutputPath=$(BuildDir)\$(Configuration);$(Properties);$(CustomPropertiesForBuild);Environment=%(Environments.Identity);IsSetupBuild=true"
+      Targets="Clean;Build"
+      ToolsVersion="$(ToolsVersion)" />
+    <MSBuild
+      Condition=" '%(Environments.Identity)'!='Development' And '$(IsDesktopBuild)'!='true' "
+      Projects="$(SetupProjectFile)"
+      Properties="Configuration=$(Configuration);OutputPath=$(BuildDir)\$(Configuration);$(Properties);$(CustomPropertiesForBuild);Environment=%(Environments.Identity);IsSetupBuild=true;DelaySign=false;AssemblyOriginatorKeyFile=$(StrongNameKeyPairPath)"
+      Targets="Clean;Build"
+      ToolsVersion="$(ToolsVersion)" />
+  </Target>
+
+  <Target Name="CorePackageConfiguration">
+    <MSBuild 
+      Projects="$(MSBuildProjectFile)"
+      Targets="CorePackageEnvironment"
+      Properties="SetupProjectFile=$(SetupProjectFile);Configuration=%(ConfigurationToBuild.FlavorToBuild)"
+      ToolsVersion="$(ToolsVersion)" />
+  </Target>
+
+  <Target Name="CorePackage" Condition=" '$(IsPackagedBuild)'=='true' ">
+    <Message 
+      Importance="high" 
+      Text="Creating packages." />
+    <!-- Build WiX projects for all environments. -->
+    <ItemGroup>
+      <SetupProjectFiles Include="$(MSBuildProjectDirectory)\..\**\*.wixproj" />
+    </ItemGroup>
+    <MSBuild
+      Projects="$(MSBuildProjectFile)"
+      Targets="CorePackageConfiguration"
+      Properties="SetupProjectFile=%(SetupProjectFiles.FullPath);BinFolder=%(SetupProjectFiles.Directory)bin;ObjFolder=%(SetupProjectFiles.Directory)obj"
+      ToolsVersion="$(ToolsVersion)" />
+    <!-- If 'DropLocationForBuild' not set, warn user. -->
+    <Warning 
+      Condition=" '$(IsDesktopBuild)'!='true' And '$(DropLocationForBuild)'=='' " 
+      Text="The 'DropLocationForBuild' MSBuild variable was not set so build artefacts will not be copied to a drop location." />
+    <!-- Copy BuildDir to drop location. -->
+    <ItemGroup>
+      <BuildDirFilesToCopy Include="$(BuildDir)\**\*.*" />
+    </ItemGroup>
+    <Copy
+      Condition=" '$(IsDesktopBuild)'!='true' And '$(DropLocationForBuild)'!='' "
+      SourceFiles="@(BuildDirFilesToCopy)"
+      DestinationFiles="@(BuildDirFilesToCopy->'$(DropLocationForBuild)\%(RecursiveDir)%(Filename)%(Extension)')" />
+    <!-- Copy TestResults to drop location. -->
+    <ItemGroup>
+      <TestResultsFilesToCopy Include="..\TestResults\**\*.*" />
+    </ItemGroup>
+    <Copy
+      Condition=" '$(IsDesktopBuild)'!='true' And '$(DropLocationForBuild)'!='' "
+      SourceFiles="@(TestResultsFilesToCopy)"
+      DestinationFiles="@(TestResultsFilesToCopy->'$(DropLocationForBuild)\TestResults\%(RecursiveDir)%(Filename)%(Extension)')" />
+  </Target>
+
+  <Target Name="CoreDeploy" />
+
+  <Target Name="SolutionBuild" DependsOnTargets="$(SolutionBuildDependsOn)" />
+
+  <Target Name="CleanSolutionConfiguration">
+    <Message 
+      Importance="high" 
+      Text="Cleaning the following Solution configurations:" />
+    <Message
+      Importance="high"
+      Text="- %(ConfigurationToBuild.FlavorToBuild)" />
+    <MSBuild
+      Projects="$(Solution)"
+      Targets="Clean"
+      Properties="Configuration=%(ConfigurationToBuild.FlavorToBuild)"
+      ToolsVersion="$(ToolsVersion)" />
+  </Target>
+  
+  <Target Name="CleanSolution">
+    <MSBuild 
+      Projects="$(MSBuildProjectFile)" 
+      Targets="CleanSolutionConfiguration"
+      Properties="Solution=%(SolutionToBuild.Identity);IsAllConfigurationsBuild=true"
+      ToolsVersion="$(ToolsVersion)" />
+    <ItemGroup>
+      <!-- App.config files are not typically generated, all others are. -->
+      <ItemsToDelete 
+        Include="..\*\*.config" 
+        Exclude="..\*\App.config" />
+      <ItemsToDelete
+        Include="..\*\*.cache" />
+      <ItemsToDelete
+        Include="..\*\bin\**" />
+      <ItemsToDelete
+        Include="..\*\obj\**" />
+    </ItemGroup>
+    <Message
+      Importance="high" 
+      Text="Deleting generated configuration files." />
+    <Delete Files="@(ItemsToDelete)" />
+  </Target>
+
+</Project>

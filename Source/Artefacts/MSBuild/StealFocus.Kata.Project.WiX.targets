@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <!-- 
+    IMPORTANT - please do not customise this .targets file. Modifications will affect all Solutions using the software 
+    factory and maybe overridden by future updates to the software factory. Customise your build process by editing 
+    the *.targets/*.proj files in your solution.
+  -->
+
+  <PropertyGroup>
+    <BuildDependsOn>
+      BeforeBuildCustom;
+      $(BuildDependsOn);
+      AfterBuildCustom
+    </BuildDependsOn>
+    <RebuildDependsOn>
+      BeforeRebuildCustom;
+      $(RebuildDependsOn);
+      AfterRebuildCustom
+    </RebuildDependsOn>
+    <ResolveReferencesDependsOn>
+      BeforeResolveReferencesCustom;
+      $(ResolveReferencesDependsOn);
+      AfterResolveReferencesCustom
+    </ResolveReferencesDependsOn>
+    <CompileAndLinkDependsOn>
+      BeforeCompileAndLinkCustom;
+      $(CompileAndLinkDependsOn);
+      AfterCompileAndLinkCustom
+    </CompileAndLinkDependsOn>
+    <CleanDependsOn>
+      BeforeCleanCustom;
+      $(CleanDependsOn);
+      AfterCleanCustom
+    </CleanDependsOn>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <ConfigurationFilesProcessedLocationPath>$(ProjectDir)ConfigurationFiles</ConfigurationFilesProcessedLocationPath>
+    <UseTempExtensionForTemporaryConfigurationFiles>false</UseTempExtensionForTemporaryConfigurationFiles>
+  </PropertyGroup>
+
+  <Target Name="RenameMsi" Condition=" '$(IsCommandLineBuild)'=='true' And '$(OutputType)'=='Package' ">
+    <PropertyGroup>
+      <OriginalFileName>$(OutputPath)\$(OutputName).msi</OriginalFileName>
+      <TargetFileName>$(OutputPath)\_Installers\$(OutputName).$(Environment).msi</TargetFileName>
+    </PropertyGroup>
+    <Copy 
+      SourceFiles="$(OriginalFileName)" 
+      DestinationFiles="$(TargetFileName)" />
+    <Delete
+      Files="$(OriginalFileName)" />
+  </Target>
+
+  <Target Name="BeforeBuild">
+    <Message 
+      Condition=" '$(IsCommandLineBuild)'=='true' " 
+      Importance="high" 
+      Text="Project is $(MSBuildProjectName) ($(Configuration)|$(Platform))." />
+    <Message
+      Condition=" '$(IsCommandLineBuild)'=='true' "
+      Importance="high"
+      Text="Environment is '$(Environment)'." />
+    <Message Text="BuildLabel is '$(BuildLabel)'." />
+    <Message Text="BuildLabelNumber is '$(BuildLabelNumber)'." />
+    <Message Text="VersionNumber is '$(VersionNumber)'." />
+    <CallTarget
+      Condition=" '$(IsCommandLineBuild)'=='true' Or '$(IsDesktopBuild)'!='true' "
+      Targets="ProcessConfigurationFiles" />
+  </Target>
+
+  <Target Name="AfterBuild" DependsOnTargets="RenameMsi" />
+
+  <Target Name="BeforeRebuild">
+    <CallTarget
+      Condition=" '$(IsDesktopBuild)'=='true' "
+      Targets="ProcessConfigurationFiles" />
+  </Target>
+
+  <Target Name="AfterRebuild" DependsOnTargets="RenameMsi" />
+
+  <Target Name="BeforeResolveReferences" />
+
+  <Target Name="AfterResolveReferences" />
+
+  <Target Name="BeforeCompileAndLink" />
+
+  <Target Name="AfterCompileAndLink" />
+
+  <Target Name="BeforeClean" />
+
+  <Target Name="AfterClean" />
+
+</Project>
