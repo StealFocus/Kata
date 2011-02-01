@@ -8,7 +8,9 @@
   -->
 
   <ItemGroup>
-    <XmlFileCheckerFilesToCheck Include="$(SolutionDir)**\*.csproj" />
+    <!-- "XmlFileCheckerFilesToCheckTemp" used to work around long file paths. -->
+    <XmlFileCheckerFilesToCheckTemp Include="($(SolutionDir)**\*.csproj).FullPath" />
+    <XmlFileCheckerFilesToCheck Include="@(XmlFileCheckerFilesToCheckTemp)" />
   </ItemGroup>
 
   <PropertyGroup Condition=" '$(SilverlightApplication)'!='true' ">
