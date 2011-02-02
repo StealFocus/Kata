@@ -27,3 +27,7 @@
 _ReSharper*/
 obj/
 Thumbs.db
+
+!/Library/*.pdb
+!/Source/Artefacts/MSBuild/MicrosoftSdcTasks/Microsoft.Sdc.Tasks.BizTalk.pdb
+!/Source/Artefacts/MSBuild/MicrosoftSdcTasks/Microsoft.Sdc.Tasks.pdb
