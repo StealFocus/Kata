@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="Build">
+
+  <ItemGroup>
+    <ConfigurationToBuild Include="Debug|Any CPU">
+      <FlavorToBuild>Debug</FlavorToBuild>
+      <PlatformToBuild>Any CPU</PlatformToBuild>
+    </ConfigurationToBuild>
+    <ConfigurationToBuild Include="Release|Any CPU">
+      <FlavorToBuild>Release</FlavorToBuild>
+      <PlatformToBuild>Any CPU</PlatformToBuild>
+    </ConfigurationToBuild>
+  </ItemGroup>
+
+  <Target Name="Build">
+    <MSBuild
+      Projects="..\StealFocus.Kata.sln" 
+      Properties="BuildLabelNumber=$(BuildLabelNumber);Configuration=%(ConfigurationToBuild.FlavorToBuild);OutputPath=$(DropLocationForBuild)\%(ConfigurationToBuild.FlavorToBuild);VersionNumber=$(VersionNumber)" 
+      Targets="Rebuild" />
+  </Target>
+  
+</Project>
