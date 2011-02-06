@@ -14,7 +14,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <OutputPath>bin\$(Configuration)\</OutputPath>
     <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
-    <DefineConstants>Debug;BuildLabelNumber=1.0.0.1;VersionNumber=1.0.0.1</DefineConstants>
+    <DefineConstants>Debug;BuildLabelNumber=$(BuildLabelNumber);VersionNumber=$(VersionNumber)</DefineConstants>
     <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
     <SuppressAllWarnings>False</SuppressAllWarnings>
     <Pedantic>True</Pedantic>

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="Default">
+
+  <Import Project="$(MSBuildExtensionsPath)\StealFocus\MSBuild\v1.0\StealFocus.MSBuild.Targets" />
+
+  <Target Name="Default">
+    <Error
+      Condition=" '$(BranchName)'=='' "
+      Text="Please provide a 'BranchName' MSBuild variable e.g. 'Trunk'." />
+    <Error
+      Condition=" '$(CCNetLabel)'=='' "
+      Text="Please provide a 'CCNetLabel' MSBuild variable e.g. 'CCNetLabel'." />
+    <Error
+      Condition=" '$(DropLocation)'=='' "
+      Text="Please provide a 'DropLocation' MSBuild variable e.g. '\\Share\Project'." />
+    <Error
+      Condition=" '$(MajorVersionNumber)'=='' "
+      Text="Please provide a 'MajorVersionNumber' MSBuild variable e.g. '1' (the 1 in 1.0.0.0)." />
+    <Error
+      Condition=" '$(MinorVersionNumber)'=='' "
+      Text="Please provide a 'MinorVersionNumber' MSBuild variable e.g. '2' (the 2 in 1.2.0.0)." />
+    <PropertyGroup>
+      <BuildLabelNumber>$(MajorVersionNumber).$(MinorVersionNumber).$(CCNetLabel).0</BuildLabelNumber>
+      <DropLocationForBuild>$(DropLocation)\$(BranchName)\$(BuildLabelNumber)</DropLocationForBuild>
+      <VersionNumber>$(MajorVersionNumber).$(MinorVersionNumber).$(CCNetLabel).0</VersionNumber>
+    </PropertyGroup>
+    <!-- Log the properties we are using. -->
+    <Message 
+      Importance="high" 
+      Text="Build information:" />
+    <Message 
+      Importance="high" 
+      Text="Using 'BranchName' = '$(BranchName)'." />
+    <Message 
+      Importance="high" 
+      Text="Using 'BuildLabelNumber' = '$(BuildLabelNumber)'." />
+    <Message 
+      Importance="high" 
+      Text="Using 'DropLocation' = '$(DropLocation)'." />
+    <Message 
+      Importance="high" 
+      Text="Using 'DropLocationForBuild' = '$(DropLocationForBuild)'." />
+    <Message 
+      Importance="high" 
+      Text="Using 'VersionNumber' = '$(VersionNumber)'." />
+    <MSBuild
+      Projects="StealFocus.Kata.Build.proj"
+      Properties="BranchName=$(BranchName);BuildLabelNumber=$(BuildLabelNumber);DropLocation=$(DropLocation);DropLocationForBuild=$(DropLocationForBuild);VersionNumber=$(VersionNumber)" />
+  </Target>
+
+</Project>

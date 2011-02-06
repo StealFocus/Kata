@@ -32,6 +32,13 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{B05B81AA-E348-4DC9-A06B-AA004802F4B3}"
 	ProjectSection(SolutionItems) = preProject
 		StealFocus.Kata.License.rtf = StealFocus.Kata.License.rtf
+		Version Changes.txt = Version Changes.txt
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Scripts", "Scripts", "{2F716C7B-4027-4778-9663-05FB95B60FC0}"
+	ProjectSection(SolutionItems) = preProject
+		Scripts\StealFocus.Kata.Build.proj = Scripts\StealFocus.Kata.Build.proj
+		Scripts\StealFocus.Kata.CCNet.proj = Scripts\StealFocus.Kata.CCNet.proj
 	EndProjectSection
 EndProject
 Global

@@ -1,6 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Wix
   xmlns="http://schemas.microsoft.com/wix/2006/wi">
+
+  <?ifdef BuildLabelNumber ?>
+    <!-- Do nothing -->
+  <?else?>
+    <?define BuildLabelNumber = "0.0.0.0" ?>
+  <?endif?>
+  <?ifdef VersionNumber ?>
+    <!-- Do nothing -->
+  <?else?>
+    <?define VersionNumber = "0.0.0.0" ?>
+  <?endif?>
+
   <Product
     Id="6481C32F-3805-4404-9882-1A3EEA73B102"
     Name="StealFocus Kata $(var.BuildLabelNumber)"
