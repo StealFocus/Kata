@@ -449,13 +449,13 @@
       "Clean" target called to guarantee MSI is re-generated to ensure the configuration files for the correct environment are packaged inside.
     -->
     <MSBuild
-      Condition=" '%(Environments.Identity)'!='Development' And '$(IsDesktopBuild)'=='true' And '%(Environments.IsIncludedInDesktopBuild)'=='true' "
+      Condition=" '%(Environments.Identity)'!='Development' And '%(Environments.Identity)'!='' And '$(IsDesktopBuild)'=='true' And '%(Environments.IsIncludedInDesktopBuild)'=='true' "
       Projects="$(SetupProjectFile)"
       Properties="Configuration=$(Configuration);OutputPath=$(BuildDir)\$(Configuration);$(Properties);$(CustomPropertiesForBuild);Environment=%(Environments.Identity);IsSetupBuild=true"
       Targets="Clean;Build"
       ToolsVersion="$(ToolsVersion)" />
     <MSBuild
-      Condition=" '%(Environments.Identity)'!='Development' And '$(IsDesktopBuild)'!='true' "
+      Condition=" '%(Environments.Identity)'!='Development' And '%(Environments.Identity)'!='' And '$(IsDesktopBuild)'!='true' "
       Projects="$(SetupProjectFile)"
       Properties="Configuration=$(Configuration);OutputPath=$(BuildDir)\$(Configuration);$(Properties);$(CustomPropertiesForBuild);Environment=%(Environments.Identity);IsSetupBuild=true;DelaySign=false;AssemblyOriginatorKeyFile=$(StrongNameKeyPairPath)"
       Targets="Clean;Build"
