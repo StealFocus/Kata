@@ -33,7 +33,7 @@
         <Directory Id='MSBuild' Name='MSBuild'>
           <Directory Id='MSBuild_StealFocus' Name='StealFocus'>
             <Directory Id='MSBuild_StealFocus_Kata' Name='Kata'>
-              <Directory Id='MSBuild_StealFocus_Kata_v0.0' Name='v0.0'>
+              <Directory Id='MSBuild_StealFocus_Kata_v1.2' Name='v1.2'>
                 <Component Id='MSBuildScripts' Guid='{C2F7A3F1-D779-46AC-B99D-0C84482B6C3F}' KeyPath='yes'>
                   <File
                     Id='StealFocus.Kata.Build.targets'
@@ -64,7 +64,7 @@
                     Name='StealFocus.Kata.targets'
                     Source='..\Artefacts\MSBuild\StealFocus.Kata.targets' />
                 </Component>
-                <Directory Id='MSBuild_StealFocus_Kata_v0.0_MicrosoftSdcTasks' Name='MicrosoftSdcTasks'>
+                <Directory Id='MSBuild_StealFocus_Kata_v1.2_MicrosoftSdcTasks' Name='MicrosoftSdcTasks'>
                   <Component Id='MicrosoftSdcTasks' Guid='{AAF5FB34-286E-432A-8C82-A77074ACE852}' KeyPath='yes'>
                     <File
                       Id='Installing_and_Using_the_SDC_Tasks.pdf'
@@ -110,7 +110,7 @@
         </Directory>
         <Directory Id='StealFocus' Name='StealFocus'>
           <Directory Id='StealFocus_Kata' Name='Kata'>
-            <Directory Id='StealFocus_Kata_Version0.0' Name='Version 0.0'>
+            <Directory Id='StealFocus_Kata_Version1.2' Name='Version 1.2'>
               <Component Id='Core' Guid='{BD36746E-A6EC-4E03-ABEF-25FA9F264441}' KeyPath='yes'>
                 <!-- License file -->
                 <File
