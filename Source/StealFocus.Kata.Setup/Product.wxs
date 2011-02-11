@@ -14,12 +14,12 @@
   <?endif?>
 
   <Product
-    Id="79A36C3C-DD37-42C7-9DF6-A5DDEA349DF5"
+    Id="89A15377-1EDD-40FC-A2FB-34ECA423015E"
     Name="StealFocus Kata $(var.BuildLabelNumber)"
     Language="1033"
     Version="$(var.VersionNumber)"
     Manufacturer="StealFocus"
-    UpgradeCode="EBA4E88E-C84D-4034-8A5F-8DCA6639B4AB">
+    UpgradeCode="A50D164F-51A3-41D5-8AAE-408BF02B21F4">
 
     <Package InstallerVersion="200" Compressed="yes" />
 
