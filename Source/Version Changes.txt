@@ -1,0 +1,60 @@
+Update versions in ".wixproj file".
+Update Product element in Product.wxs
+Update 3 Directory elements in Product.wxs
+Copy 7 .targets files from Artefacts/MSBuild
+
+  <!-- Trunk -->
+  0.0.0.0
+  <Product 
+    Id="79A36C3C-DD37-42C7-9DF6-A5DDEA349DF5"
+    Name="StealFocus Kata $(var.BuildLabelNumber)"
+    Language="1033"
+    Version="$(var.VersionNumber)"
+    Manufacturer="StealFocus"
+    UpgradeCode="EBA4E88E-C84D-4034-8A5F-8DCA6639B4AB">
+
+  <Directory Id='MSBuild_StealFocus_Kata_v0.0' Name='v0.0'>
+  <Directory Id='MSBuild_StealFocus_Kata_v0.0_MicrosoftSdcTasks' Name='MicrosoftSdcTasks'>
+  <Directory Id='StealFocus_Kata_Version0.0' Name='Version 0.0'>
+
+  <!-- v1.0 -->
+  1.0.0.0
+  <Product 
+    Id="6481C32F-3805-4404-9882-1A3EEA73B102" 
+    Name="StealFocus Kata $(var.BuildLabelNumber)" 
+    Language="1033" 
+    Version="$(var.VersionNumber)" 
+    Manufacturer="StealFocus" 
+    UpgradeCode="2ED7F135-2706-45B7-A9AB-5396B59C3EEE">
+
+  <Directory Id='MSBuild_StealFocus_Kata_v1.0' Name='v1.0'>
+  <Directory Id='MSBuild_StealFocus_Kata_v1.0_MicrosoftSdcTasks' Name='MicrosoftSdcTasks'>
+  <Directory Id='StealFocus_Kata_Version1.0' Name='Version 1.0'>
+
+  <!-- v1.1 -->
+  1.1.0.7
+  <Product 
+    Id="D5771F89-98C8-43E4-848C-FE277D3505FE" 
+    Name="StealFocus Kata $(var.BuildLabelNumber)" 
+    Language="1033" 
+    Version="$(var.VersionNumber)" 
+    Manufacturer="StealFocus" 
+    UpgradeCode="79D01D5B-BFD2-404D-8F7B-2043324107AC">
+
+  <Directory Id='MSBuild_StealFocus_Kata_v1.1' Name='v1.1'>
+  <Directory Id='MSBuild_StealFocus_Kata_v1.1_MicrosoftSdcTasks' Name='MicrosoftSdcTasks'>
+  <Directory Id='StealFocus_Kata_Version1.1' Name='Version 1.1'>
+
+  <!-- v1.2 -->
+  1.2.0.5
+  <Product 
+    Id="89A15377-1EDD-40FC-A2FB-34ECA423015E"
+    Name="StealFocus Kata $(var.BuildLabelNumber)"
+    Language="1033"
+    Version="$(var.VersionNumber)"
+    Manufacturer="StealFocus"
+    UpgradeCode="A50D164F-51A3-41D5-8AAE-408BF02B21F4">
+
+  <Directory Id='MSBuild_StealFocus_Kata_v1.2' Name='v1.2'>
+  <Directory Id='MSBuild_StealFocus_Kata_v1.2_MicrosoftSdcTasks' Name='MicrosoftSdcTasks'>
+  <Directory Id='StealFocus_Kata_Version1.2' Name='Version 1.2'>
