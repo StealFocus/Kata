@@ -72,6 +72,10 @@
     <BuildDir>..\..\Build</BuildDir>
   </PropertyGroup>
 
+  <Target Name="BeforeCoreInitialiseBuild">
+    <!-- To be overridden in inheriting script. -->
+  </Target>
+
   <Target Name="CoreInitialiseBuild">
     <Message
       Importance="high"
@@ -95,6 +99,10 @@
     <RemoveDir
       Condition=" Exists('$(TestResultsFolderPath)') "
       Directories="$(TestResultsFolderPath)" />
+  </Target>
+
+  <Target Name="AfterCoreInitialiseBuild">
+    <!-- To be overridden in inheriting script. -->
   </Target>
 
   <Target Name="DeleteAppPool">
@@ -263,6 +271,10 @@
       Properties="VirtualDirectoryName=%(WebApplicationProject.Identity)" />
   </Target>
 
+  <Target Name="BeforeInitialiseBuildCustom">
+    <!-- To be overridden in inheriting script. -->
+  </Target>
+
   <Target Name="CoreInitialiseEnvironment" DependsOnTargets="SetupIis">
     <Message
       Importance="high"
@@ -343,10 +355,18 @@
 			Value="$(systemdrive)\Windows\Microsoft.NET\Framework\v2.0.50727\EventLogMessages.dll" />
   </Target>
 
+  <Target Name="AfterInitialiseBuildCustom">
+    <!-- To be overridden in inheriting script. -->
+  </Target>
+
   <ItemGroup>
     <DatabaseProject
       Include="..\**\*.dbproj" />
   </ItemGroup>
+
+  <Target Name="BeforeDatabaseBuildCustom">
+    <!-- To be overridden in inheriting script. -->
+  </Target>
   
   <Target Name="CoreDatabaseBuild">
     <!-- Drop database(s) -->
@@ -362,7 +382,11 @@
       Projects="%(DatabaseProject.FullPath)"
       Targets="Rebuild;Deploy" />
   </Target>
-  
+
+  <Target Name="AfterDatabaseBuildCustom">
+    <!-- To be overridden in inheriting script. -->
+  </Target>
+
   <Target Name="CoreSolutionCompileConfiguration">
     <MSBuild
       Condition=" '$(IsDesktopBuild)'=='true' "
@@ -376,6 +400,10 @@
       Targets="$(Targets)" />
   </Target>
 
+  <Target Name="BeforeSolutionCompileCustom">
+    <!-- To be overridden in inheriting script. -->
+  </Target>
+
   <Target Name="CoreSolutionCompile">
     <Message
       Importance="high"
@@ -384,6 +412,14 @@
       Projects="$(MSBuildProjectFile)"
       Properties="Solution=%(SolutionToBuild.Identity);BuildDir=$(BuildDir);Properties=%(SolutionToBuild.Properties);Targets=%(SolutionToBuild.Targets);"
       Targets="CoreSolutionCompileConfiguration" />
+  </Target>
+
+  <Target Name="AfterSolutionCompileCustom">
+    <!-- To be overridden in inheriting script. -->
+  </Target>
+
+  <Target Name="BeforeRunTestsCustom">
+    <!-- To be overridden in inheriting script. -->
   </Target>
 
   <Target Name="CoreRunTests">
@@ -399,6 +435,14 @@
       WorkingDirectory="..\" />
   </Target>
 
+  <Target Name="AfterRunTestsCustom">
+    <!-- To be overridden in inheriting script. -->
+  </Target>
+
+  <Target Name="BeforeBuildDocumentationCustom">
+    <!-- To be overridden in inheriting script. -->
+  </Target>
+
   <Target Name="CoreBuildDocumentation" Condition=" '$(IsDocumentationBuild)'=='true' ">
     <Message
       Importance="high"
@@ -410,6 +454,10 @@
       TO DO: Does "HelpFileVersion" do anything if supplied? 
       Properties="Configuration=Release;Platform=AnyCPU;OutDir=$(BinariesRoot)\Release;HelpFileVersion=$(BuildLabelNumberComponent);"
     -->
+  </Target>
+
+  <Target Name="AfterBuildDocumentationCustom">
+    <!-- To be overridden in inheriting script. -->
   </Target>
 
   <Target Name="CorePackageEnvironment">
@@ -434,6 +482,10 @@
       Projects="$(MSBuildProjectFile)"
       Targets="CorePackageEnvironment"
       Properties="SetupProjectFile=$(SetupProjectFile);Configuration=%(ConfigurationToBuild.FlavorToBuild)" />
+  </Target>
+
+  <Target Name="BeforePackageCustom">
+    <!-- To be overridden in inheriting script. -->
   </Target>
 
   <Target Name="CorePackage" Condition=" '$(IsPackagedBuild)'=='true' ">
@@ -470,7 +522,19 @@
       DestinationFiles="@(TestResultsFilesToCopy->'$(DropLocationForBuild)\TestResults\%(RecursiveDir)%(Filename)%(Extension)')" />
   </Target>
 
+  <Target Name="AfterPackageCustom">
+    <!-- To be overridden in inheriting script. -->
+  </Target>
+
+  <Target Name="BeforeDeployCustom">
+    <!-- To be overridden in inheriting script. -->
+  </Target>
+
   <Target Name="CoreDeploy" />
+
+  <Target Name="AfterDeployCustom">
+    <!-- To be overridden in inheriting script. -->
+  </Target>
 
   <Target Name="SolutionBuild" DependsOnTargets="$(SolutionBuildDependsOn)" />
 
