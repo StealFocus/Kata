@@ -72,6 +72,10 @@
     <BuildDir>..\..\Build</BuildDir>
   </PropertyGroup>
 
+  <Target Name="BeforeCoreInitialiseBuild">
+    <!-- To be overridden in inheriting script. -->
+  </Target>
+
   <Target Name="CoreInitialiseBuild">
     <Message
       Importance="high"
@@ -95,6 +99,10 @@
     <RemoveDir
       Condition=" Exists('$(TestResultsFolderPath)') "
       Directories="$(TestResultsFolderPath)" />
+  </Target>
+
+  <Target Name="AfterCoreInitialiseBuild">
+    <!-- To be overridden in inheriting script. -->
   </Target>
 
   <Target Name="DeleteAppPool">
@@ -265,6 +273,10 @@
       ToolsVersion="$(ToolsVersion)" />
   </Target>
 
+  <Target Name="BeforeInitialiseBuildCustom">
+    <!-- To be overridden in inheriting script. -->
+  </Target>
+
   <Target Name="CoreInitialiseEnvironment" DependsOnTargets="SetupIis">
     <Message
       Importance="high"
@@ -346,11 +358,19 @@
 			Value="$(systemdrive)\Windows\Microsoft.NET\Framework\v2.0.50727\EventLogMessages.dll" />
   </Target>
 
+  <Target Name="AfterInitialiseBuildCustom">
+    <!-- To be overridden in inheriting script. -->
+  </Target>
+
   <ItemGroup>
     <DatabaseProject
       Include="..\**\*.dbproj" />
   </ItemGroup>
-  
+
+  <Target Name="BeforeDatabaseBuildCustom">
+    <!-- To be overridden in inheriting script. -->
+  </Target>
+
   <Target Name="CoreDatabaseBuild">
     <!-- Drop database(s) -->
     <Microsoft.Sdc.Tasks.Sql.Execute
@@ -365,6 +385,10 @@
       Projects="%(DatabaseProject.FullPath)"
       Targets="Rebuild;Deploy"
       ToolsVersion="$(ToolsVersion)" />
+  </Target>
+
+  <Target Name="AfterDatabaseBuildCustom">
+    <!-- To be overridden in inheriting script. -->
   </Target>
 
   <Target Name="CoreSolutionCompileConfigurationAndPackageSharePointSolutions">
@@ -395,13 +419,17 @@
       Targets="Package"
       ToolsVersion="$(ToolsVersion)" />
   </Target>
-  
+
   <Target Name="CoreSolutionCompileConfiguration">
     <MSBuild
       Projects="$(MSBuildProjectFile)"
       Properties="Solution=$(Solution);Targets=$(Targets);Properties=$(Properties);Configuration=%(ConfigurationToBuild.FlavorToBuild);OutputPath=$(BuildDir)\%(ConfigurationToBuild.FlavorToBuild);"
       Targets="CoreSolutionCompileConfigurationAndPackageSharePointSolutions"
       ToolsVersion="$(ToolsVersion)" />
+  </Target>
+
+  <Target Name="BeforeSolutionCompileCustom">
+    <!-- To be overridden in inheriting script. -->
   </Target>
 
   <Target Name="CoreSolutionCompile">
@@ -415,18 +443,34 @@
       ToolsVersion="$(ToolsVersion)" />
   </Target>
 
+  <Target Name="AfterSolutionCompileCustom">
+    <!-- To be overridden in inheriting script. -->
+  </Target>
+
+  <Target Name="BeforeRunTestsCustom">
+    <!-- To be overridden in inheriting script. -->
+  </Target>
+
   <Target Name="CoreRunTests">
-    <Message
+    <Message 
       Importance="high" 
       Text="Running tests." />
     <!-- "ToolsVersion" property applied to "FrameworkVersion" attribute intentionally. -->
-    <StealFocus.MSBuild.Tasks.MSTest
+    <StealFocus.MSBuild.Tasks.MSTest 
       BinariesRootPath="$(BuildDir)" 
       FlavorToBuild="%(ConfigurationToBuild.FlavorToBuild)" 
-      FrameworkVersion="$(ToolsVersion)"
+      FrameworkVersion="$(ToolsVersion)" 
       TestContainerSearchFilters="$(MSTestTestContainerSearchFilters)" 
       TestRunConfigFilePath="$(MSTestTestRunConfigFilePath)" 
       WorkingDirectory="..\" />
+  </Target>
+
+  <Target Name="AfterRunTestsCustom">
+    <!-- To be overridden in inheriting script. -->
+  </Target>
+
+  <Target Name="BeforeBuildDocumentationCustom">
+    <!-- To be overridden in inheriting script. -->
   </Target>
 
   <Target Name="CoreBuildDocumentation" Condition=" '$(IsDocumentationBuild)'=='true' ">
@@ -441,6 +485,10 @@
       TO DO: Does "HelpFileVersion" do anything if supplied? 
       Properties="Configuration=Release;Platform=AnyCPU;OutDir=$(BinariesRoot)\Release;HelpFileVersion=$(BuildLabelNumberComponent);"
     -->
+  </Target>
+
+  <Target Name="AfterBuildDocumentationCustom">
+    <!-- To be overridden in inheriting script. -->
   </Target>
 
   <Target Name="CorePackageEnvironment">
@@ -468,6 +516,10 @@
       Targets="CorePackageEnvironment"
       Properties="SetupProjectFile=$(SetupProjectFile);Configuration=%(ConfigurationToBuild.FlavorToBuild)"
       ToolsVersion="$(ToolsVersion)" />
+  </Target>
+
+  <Target Name="BeforePackageCustom">
+    <!-- To be overridden in inheriting script. -->
   </Target>
 
   <Target Name="CorePackage" Condition=" '$(IsPackagedBuild)'=='true' ">
@@ -505,7 +557,19 @@
       DestinationFiles="@(TestResultsFilesToCopy->'$(DropLocationForBuild)\TestResults\%(RecursiveDir)%(Filename)%(Extension)')" />
   </Target>
 
+  <Target Name="AfterPackageCustom">
+    <!-- To be overridden in inheriting script. -->
+  </Target>
+
+  <Target Name="BeforeDeployCustom">
+    <!-- To be overridden in inheriting script. -->
+  </Target>
+
   <Target Name="CoreDeploy" />
+
+  <Target Name="AfterDeployCustom">
+    <!-- To be overridden in inheriting script. -->
+  </Target>
 
   <Target Name="SolutionBuild" DependsOnTargets="$(SolutionBuildDependsOn)" />
 
