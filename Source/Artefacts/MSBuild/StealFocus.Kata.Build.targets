@@ -367,7 +367,7 @@
   <Target Name="BeforeDatabaseBuildCustom">
     <!-- To be overridden in inheriting script. -->
   </Target>
-  
+
   <Target Name="CoreDatabaseBuild">
     <!-- Drop database(s) -->
     <Microsoft.Sdc.Tasks.Sql.Execute
@@ -418,21 +418,548 @@
     <!-- To be overridden in inheriting script. -->
   </Target>
 
+  <!-- BizTalk Properties and Targets - Start -->
+
+  <Import Project="$(MSBuildExtensionsPath)\StealFocus\MSBuild\v1.0\StealFocus.MSBuild.Tasks.BizTalk2009.Targets" />
+
+  <PropertyGroup>
+    <StopBizTalkApplicationDependsOn>
+      StopBizTalkApplicationMessage;
+      BeforeStopBizTalkApplicationCustom;
+      CoreStopBizTalkApplication;
+      AfterStopBizTalkApplicationCustom
+    </StopBizTalkApplicationDependsOn>
+    <RemoveBizTalkApplicationAssembliesFromGacDependsOn>
+      RemoveBizTalkApplicationAssembliesFromGacMessage;
+      BeforeRemoveBizTalkApplicationAssembliesFromGacCustom;
+      CoreRemoveBizTalkApplicationAssembliesFromGac;
+      AfterRemoveBizTalkApplicationAssembliesFromGacCustom
+    </RemoveBizTalkApplicationAssembliesFromGacDependsOn>
+    <RemoveBizTalkApplicationDependsOn>
+      RemoveBizTalkApplicationMessage;
+      BeforeRemoveBizTalkApplicationCustom;
+      CoreRemoveBizTalkApplication;
+      AfterRemoveBizTalkApplicationCustom
+    </RemoveBizTalkApplicationDependsOn>
+    <DeleteBizTalkHandlersDependsOn>
+      DeleteBizTalkHandlersMessage;
+      BeforeDeleteBizTalkHandlersCustom;
+      CoreDeleteBizTalkHandlers;
+      AfterDeleteBizTalkHandlersCustom
+    </DeleteBizTalkHandlersDependsOn>
+    <DeleteBizTalkHostsDependsOn>
+      DeleteBizTalkHostsMessage;
+      BeforeDeleteBizTalkHostsCustom;
+      CoreDeleteBizTalkHosts;
+      AfterDeleteBizTalkHostsCustom
+    </DeleteBizTalkHostsDependsOn>
+    <CreateBizTalkHostsDependsOn>
+      CreateBizTalkHostsMessage;
+      BeforeCreateBizTalkHostsCustom;
+      CoreCreateBizTalkHosts;
+      AfterCreateBizTalkHostsCustom
+    </CreateBizTalkHostsDependsOn>
+    <CreateBizTalkHandlersDependsOn>
+      CreateBizTalkHandlersMessage;
+      BeforeCreateBizTalkHandlersCustom;
+      CoreCreateBizTalkHandlers;
+      AfterCreateBizTalkHandlersCustom
+    </CreateBizTalkHandlersDependsOn>
+    <CreateBizTalkApplicationDependsOn>
+      CreateBizTalkApplicationMessage;
+      BeforeCreateBizTalkApplicationCustom;
+      CoreCreateBizTalkApplication;
+      AfterCreateBizTalkApplicationCustom
+    </CreateBizTalkApplicationDependsOn>
+    <StartBizTalkApplicationDependsOn>
+      StartBizTalkApplicationMessage;
+      BeforeStartBizTalkApplicationCustom;
+      CoreStartBizTalkApplication;
+      AfterStartBizTalkApplicationCustom
+    </StartBizTalkApplicationDependsOn>
+    <ExportBizTalkApplicationDependsOn>
+      ExportBizTalkApplicationMessage;
+      BeforeExportBizTalkApplicationCustom;
+      CoreExportBizTalkApplication;
+      AfterExportBizTalkApplicationCustom
+    </ExportBizTalkApplicationDependsOn>
+    <BuildBizTalkApplicationDependsOn>
+      StopBizTalkApplication;
+      RemoveBizTalkApplicationAssembliesFromGac;
+      RemoveBizTalkApplication;
+      DeleteBizTalkHandlers;
+      DeleteBizTalkHosts;
+      CreateBizTalkHosts;
+      CreateBizTalkHandlers;
+      CreateBizTalkApplication;
+      StartBizTalkApplication;
+      ExportBizTalkApplication
+    </BuildBizTalkApplicationDependsOn>
+  </PropertyGroup>
+
+  <Target Name="ValidateBizTalkAdapters">
+    <Error
+      Condition=" '%(Adapter.Identity)'=='' "
+      Text="Please populate a 'Adapter' MSBuild Item Group." />
+  </Target>
+  
+  <Target Name="ValidateBizTalkApplicationName">
+    <Error
+      Condition=" '$(BizTalkApplicationName)'=='' "
+      Text="Please provide a 'BizTalkApplicationName' MSBuild property." />
+  </Target>
+
+  <Target Name="ValidateBizTalkBindingLog">
+    <Error
+      Condition=" '$(BizTalkBindingLog)'=='' "
+      Text="Please provide a 'BizTalkBindingLog' MSBuild property." />
+  </Target>
+
+  <Target Name="ValidateBizTalkConfigDatabaseName">
+    <Error
+      Condition=" '$(BizTalkConfigDatabaseName)'=='' "
+      Text="Please provide a 'BizTalkConfigDatabaseName' MSBuild property." />
+  </Target>
+
+  <Target Name="ValidateBizTalkDatabaseServerName">
+    <Error
+      Condition=" '$(BizTalkDatabaseServerName)'=='' "
+      Text="Please provide a 'BizTalkDatabaseServerName' MSBuild property." />
+  </Target>
+
+  <Target Name="ValidateBizTalkDevelopmentTargetEnvironmentName">
+    <Error
+      Condition=" '$(BizTalkDevelopmentTargetEnvironmentName)'=='' "
+      Text="Please provide a 'BizTalkDevelopmentTargetEnvironmentName' MSBuild property." />
+  </Target>
+
+  <Target Name="ValidateBizTalkGacAssembliesFilter">
+    <Error
+      Condition=" '$(BizTalkGacAssembliesFilter)'=='' "
+      Text="Please provide a 'BizTalkGacAssembliesFilter' MSBuild property." />
+  </Target>
+
+  <Target Name="ValidateBizTalkHostWindowsGroupName">
+    <Error
+      Condition=" '$(BizTalkHostWindowsGroupName)'=='' "
+      Text="Please provide a 'BizTalkHostWindowsGroupName' MSBuild property." />
+  </Target>
+
+  <Target Name="ValidateBizTalkInstallDirectory">
+    <Error
+      Condition=" '$(BizTalkInstallDirectory)'=='' "
+      Text="Please provide a 'BizTalkInstallDirectory' MSBuild property." />
+  </Target>
+
+  <Target Name="ValidateBizTalkInstallerPackageOutputPath">
+    <Error
+      Condition=" '$(BizTalkInstallerPackageOutputPath)'=='' "
+      Text="Please provide a 'BizTalkInstallerPackageOutputPath' MSBuild property." />
+  </Target>
+
+  <Target Name="ValidateBizTalkManagementDatabaseConnectionString">
+    <Error
+      Condition=" '$(BizTalkManagementDatabaseConnectionString)'=='' "
+      Text="Please provide a 'BizTalkManagementDatabaseConnectionString' MSBuild property." />
+  </Target>
+
+  <Target Name="ValidateBizTalkProcessHosts">
+    <Error
+      Condition=" '%(BizTalkProcessHost.Identity)'=='' "
+      Text="Please populate a 'BizTalkProcessHost' MSBuild Item Group." />
+  </Target>
+
+  <Target Name="ValidateBizTalkReceiveHosts">
+    <Error
+      Condition=" '%(BizTalkReceiveHost.Identity)'=='' "
+      Text="Please populate a 'BizTalkReceiveHost' MSBuild Item Group." />
+  </Target>
+
+  <Target Name="ValidateBizTalkSendHosts">
+    <Error
+      Condition=" '%(BizTalkSendHost.Identity)'=='' "
+      Text="Please populate a 'BizTalkSendHost' MSBuild Item Group." />
+  </Target>
+
+  <Target Name="ValidateBizTalkServerName">
+    <Error
+      Condition=" '$()'=='BizTalkServerName' "
+      Text="Please provide a 'BizTalkServerName' MSBuild property." />
+  </Target>
+
+  <Target Name="ValidateBizTalkServicePassword">
+    <Error
+      Condition=" '$(BizTalkServicePassword)'=='' "
+      Text="Please provide a 'BizTalkServicePassword' MSBuild property." />
+  </Target>
+
+  <Target Name="ValidateBizTalkServiceUsername">
+    <Error
+      Condition=" '$(BizTalkServiceUsername)'=='' "
+      Text="Please provide a 'BizTalkServiceUsername' MSBuild property." />
+  </Target>
+
+  <Target Name="StopBizTalkApplicationMessage">
+    <Message Importance="high" Text="Stopping BizTalk application." />
+  </Target>
+
+  <Target Name="BeforeStopBizTalkApplicationCustom">
+    <!-- To be overridden in inheriting script. -->
+  </Target>
+
+  <Target Name="CoreStopBizTalkApplication" DependsOnTargets="ValidateBizTalkApplicationName;ValidateBizTalkManagementDatabaseConnectionString">
+    <Bts2009StopApplication
+      ApplicationName="$(BizTalkApplicationName)"
+      ManagementDatabaseConnectionString="$(BizTalkManagementDatabaseConnectionString)"
+      TerminateOrchestrations="true" />
+  </Target>
+
+  <Target Name="AfterStopBizTalkApplicationCustom">
+    <!-- To be overridden in inheriting script. -->
+  </Target>
+
+  <Target Name="StopBizTalkApplication" DependsOnTargets="$(StopBizTalkApplicationDependsOn)" />
+
+  <Target Name="RemoveBizTalkApplicationAssembliesFromGacMessage">
+    <Message Importance="high" Text="Removing BizTalk assemblies from GAC." />
+  </Target>
+
+  <Target Name="BeforeRemoveBizTalkApplicationAssembliesFromGacCustom">
+    <!-- To be overridden in inheriting script. -->
+  </Target>
+
+  <Target Name="CoreRemoveBizTalkApplicationAssembliesFromGac" DependsOnTargets="ValidateBizTalkGacAssembliesFilter">
+    <Message
+      Importance="high"
+      Text="Deleting assemblies from the GAC matching '$(BizTalkGacAssembliesFilter)'." />
+    <GacUninstall
+      AssemblyName="$(BizTalkGacAssembliesFilter)"
+      Locale="*"
+      PublicKeyToken="*"
+      Version="*"
+      FrameworkVersion="$(FrameworkVersion)" />
+  </Target>
+
+  <Target Name="AfterRemoveBizTalkApplicationAssembliesFromGacCustom">
+    <!-- To be overridden in inheriting script. -->
+  </Target>
+
+  <Target Name="RemoveBizTalkApplicationAssembliesFromGac" DependsOnTargets="$(RemoveBizTalkApplicationAssembliesFromGacDependsOn)" />
+
+  <Target Name="RemoveBizTalkApplicationMessage">
+    <Message Importance="high" Text="Removing BizTalk application." />
+  </Target>
+
+  <Target Name="BeforeRemoveBizTalkApplicationCustom">
+    <!-- To be overridden in inheriting script. -->
+  </Target>
+
+  <Target Name="CoreRemoveBizTalkApplication" DependsOnTargets="ValidateBizTalkApplicationName;ValidateBizTalkManagementDatabaseConnectionString">
+    <Bts2009RemoveApplication
+      ApplicationName="$(BizTalkApplicationName)"
+      ManagementDatabaseConnectionString="$(BizTalkManagementDatabaseConnectionString)" />
+  </Target>
+
+  <Target Name="AfterRemoveBizTalkApplicationCustom">
+    <!-- To be overridden in inheriting script. -->
+  </Target>
+
+  <Target Name="RemoveBizTalkApplication" DependsOnTargets="$(RemoveBizTalkApplicationDependsOn)" />
+
+  <Target Name="DeleteBizTalkHandlersMessage">
+    <Message Importance="high" Text="Deleting BizTalk Handlers." />
+  </Target>
+
+  <Target Name="BeforeDeleteBizTalkHandlersCustom">
+    <!-- To be overridden in inheriting script. -->
+  </Target>
+
+  <Target Name="CoreDeleteBizTalkHandlers" DependsOnTargets="ValidateBizTalkProcessHosts;ValidateBizTalkReceiveHosts;ValidateBizTalkSendHosts">
+    <Bts2009StopHost
+      HostName="%(BizTalkReceiveHost.Identity)" />
+    <Bts2009StopHost
+      HostName="%(BizTalkProcessHost.Identity)" />
+    <Bts2009StopHost
+      HostName="%(BizTalkSendHost.Identity)" />
+    <Bts2009CleanHostQueue
+      HostName="%(BizTalkReceiveHost.Identity)" />
+    <Bts2009CleanHostQueue
+      HostName="%(BizTalkProcessHost.Identity)" />
+    <Bts2009CleanHostQueue
+      HostName="%(BizTalkSendHost.Identity)" />
+    <Bts2009DeleteAllReceiveHandlers
+      HostName="%(BizTalkReceiveHost.Identity)" />
+    <Bts2009DeleteAllSendHandlers
+      HostName="%(BizTalkSendHost.Identity)" />
+  </Target>
+
+  <Target Name="AfterDeleteBizTalkHandlersCustom">
+    <!-- To be overridden in inheriting script. -->
+  </Target>
+
+  <Target Name="DeleteBizTalkHandlers" DependsOnTargets="$(DeleteBizTalkHandlersDependsOn)" />
+  
+  <Target Name="DeleteBizTalkHostsMessage">
+    <Message Importance="high" Text="Deleting BizTalk Hosts." />
+  </Target>
+
+  <Target Name="BeforeDeleteBizTalkHostsCustom">
+    <!-- To be overridden in inheriting script. -->
+  </Target>
+
+  <Target Name="CoreDeleteBizTalkHosts" DependsOnTargets="ValidateBizTalkProcessHosts;ValidateBizTalkReceiveHosts;ValidateBizTalkSendHosts">
+    <Bts2009DeleteHost
+      HostName="%(BizTalkReceiveHost.Identity)" />
+    <Bts2009DeleteHost
+      HostName="%(BizTalkProcessHost.Identity)" />
+    <Bts2009DeleteHost
+      HostName="%(BizTalkSendHost.Identity)" />
+  </Target>
+
+  <Target Name="AfterDeleteBizTalkHostsCustom">
+    <!-- To be overridden in inheriting script. -->
+  </Target>
+
+  <Target Name="DeleteBizTalkHosts" DependsOnTargets="$(DeleteBizTalkHostsDependsOn)" />
+  
+  <Target Name="CreateBizTalkHostsMessage">
+    <Message Importance="high" Text="Creating BizTalk Hosts." />
+  </Target>
+
+  <Target Name="BeforeCreateBizTalkHostsCustom">
+    <!-- To be overridden in inheriting script. -->
+  </Target>
+
+  <Target Name="CoreCreateBizTalkHosts" DependsOnTargets="ValidateBizTalkHostWindowsGroupName;ValidateBizTalkProcessHosts;ValidateBizTalkReceiveHosts;ValidateBizTalkSendHosts;ValidateBizTalkServerName;ValidateBizTalkServicePassword;ValidateBizTalkServiceUsername">
+    <Bts2009CreateHost
+      HostName="%(BizTalkReceiveHost.Identity)"
+      HostTracking="true"
+      HostType="InProcess"
+      IsDefault="false"
+      Trusted="false"
+      WindowsGroupName="$(BizTalkHostWindowsGroupName)" />
+    <Bts2009CreateHost
+      HostName="%(BizTalkProcessHost.Identity)"
+			HostTracking="true"
+			HostType="InProcess"
+			IsDefault="false"
+			Trusted="false"
+			WindowsGroupName="$(BizTalkHostWindowsGroupName)" />
+    <Bts2009CreateHost
+      HostName="%(BizTalkSendHost.Identity)"
+			HostTracking="true"
+			HostType="InProcess"
+			IsDefault="false"
+			Trusted="false"
+			WindowsGroupName="$(BizTalkHostWindowsGroupName)" />
+    <Bts2009CreateHostInstance
+      HostName="%(BizTalkReceiveHost.Identity)"
+      ServerName="$(BizTalkServerName)"
+      Username="$(BizTalkServiceUsername)"
+      Password="$(BizTalkServicePassword)" />
+    <Bts2009CreateHostInstance
+      HostName="%(BizTalkProcessHost.Identity)"
+			ServerName="$(BizTalkServerName)"
+			Username="$(BizTalkServiceUsername)"
+			Password="$(BizTalkServicePassword)" />
+    <Bts2009CreateHostInstance
+      HostName="%(BizTalkSendHost.Identity)"
+			ServerName="$(BizTalkServerName)"
+			Username="$(BizTalkServiceUsername)"
+			Password="$(BizTalkServicePassword)" />
+  </Target>
+
+  <Target Name="AfterCreateBizTalkHostsCustom">
+    <!-- To be overridden in inheriting script. -->
+  </Target>
+
+  <Target Name="CreateBizTalkHosts" DependsOnTargets="$(CreateBizTalkHostsDependsOn)" />
+  
+  <Target Name="CreateBizTalkHandlersMessage">
+    <Message Importance="high" Text="Creating BizTalk Handlers." />
+  </Target>
+
+  <Target Name="BeforeCreateBizTalkHandlersCustom">
+    <!-- To be overridden in inheriting script. -->
+  </Target>
+
+  <Target Name="CoreCreateBizTalkHandlers" DependsOnTargets="ValidateBizTalkAdapters">
+    <Bts2009CreateReceiveHandler
+      Condition=" '%(Adapter.BizTalkReceiveHostName)'!='' "
+      AdapterName="%(Adapter.BizTalkAdapterName)"
+      HostName="%(Adapter.BizTalkReceiveHostName)" />
+    <Bts2009CreateSendHandler
+      Condition=" '%(Adapter.BizTalkSendHostName)'!='' "
+      AdapterName="%(Adapter.BizTalkAdapterName)"
+      HostName="%(Adapter.BizTalkSendHostName)" />
+  </Target>
+
+  <Target Name="AfterCreateBizTalkHandlersCustom">
+    <!-- To be overridden in inheriting script. -->
+  </Target>
+
+  <Target Name="CreateBizTalkHandlers" DependsOnTargets="$(CreateBizTalkHandlersDependsOn)" />
+  
+  <Target Name="CreateBizTalkApplicationMessage">
+    <Message Importance="high" Text="Creating BizTalk application." />
+  </Target>
+
+  <Target Name="BeforeCreateBizTalkApplicationCustom">
+    <!-- To be overridden in inheriting script. -->
+  </Target>
+
+  <Target Name="CoreCreateBizTalkApplication" DependsOnTargets="ValidateBizTalkApplicationName;ValidateBizTalkBindingLog;ValidateBizTalkConfigDatabaseName;ValidateBizTalkDatabaseServerName;ValidateBizTalkDevelopmentTargetEnvironmentName;ValidateBizTalkInstallDirectory">
+    <Exec
+      Command="BTSTask AddApp -ApplicationName:$(BizTalkApplicationName) -Description:$(BizTalkApplicationName) -Server:$(BizTalkDatabaseServerName) -Database:$(BizTalkConfigDatabaseName)" />
+    <!-- Check Assembly paths. -->
+    <Error
+      Condition=" !Exists('%(BizTalkAssembly.FullPath)') "
+      Text=" The '%(BizTalkAssembly.FullPath)' Assembly was not found. Was the given path valid?" />
+    <!-- Check Bindings paths. -->
+    <Error
+      Condition=" !Exists('%(BindingsFile.FullPath)') "
+      Text=" The '%(BindingsFile.TargetEnvironment)' Bindings file was not found. Was the given path valid?" />
+    <!-- Add Resources. -->
+    <Exec
+      Command='BTSTask AddResource /Source:"%(BindingsFile.FullPath)" /Property:TargetEnvironment="%(BindingsFile.TargetEnvironment)" /ApplicationName:"$(BizTalkApplicationName)" /Type:System.BizTalk:BizTalkBinding' />
+    <Exec
+      Command='BTSTask AddResource /Source:"%(BizTalkAssembly.FullPath)" /ApplicationName:"$(BizTalkApplicationName)" /Type:System.BizTalk:BizTalkAssembly /Overwrite /Destination:"$(BizTalkInstallDirectory)\%(BizTalkAssembly.Filename).%(BizTalkAssembly.Extension)" /Options:%(BizTalkAssembly.InstallOptions)' />
+    <!-- Delete any old binding log and then Bind. -->
+    <Delete
+      Files="$(BizTalkBindingLog)" />
+    <Exec
+      Condition=" '%(BindingsFile.TargetEnvironment)'=='$(BizTalkDevelopmentTargetEnvironmentName)' "
+      Command='BTSTask ImportBindings -Source:"%(BindingsFile.FullPath)" -ApplicationName:$(BizTalkApplicationName) > $(BizTalkBindingLog)' />
+  </Target>
+
+  <Target Name="AfterCreateBizTalkApplicationCustom">
+    <!-- To be overridden in inheriting script. -->
+  </Target>
+
+  <Target Name="CreateBizTalkApplication" DependsOnTargets="$(CreateBizTalkApplicationDependsOn)" />
+
+  <Target Name="StartBizTalkApplicationMessage">
+    <Message Importance="high" Text="Starting BizTalk application." />
+  </Target>
+
+  <Target Name="BeforeStartBizTalkApplicationCustom">
+    <!-- To be overridden in inheriting script. -->
+  </Target>
+
+  <Target Name="CoreStartBizTalkApplication" DependsOnTargets="ValidateBizTalkApplicationName;ValidateBizTalkManagementDatabaseConnectionString">
+    <Bts2009StartAllSendPorts
+      ApplicationName="$(BizTalkApplicationName)"
+      ManagementDatabaseConnectionString="$(BizTalkManagementDatabaseConnectionString)" />
+    <Bts2009EnableAllReceiveLocations
+      ApplicationName="$(BizTalkApplicationName)"
+			ManagementDatabaseConnectionString="$(BizTalkManagementDatabaseConnectionString)" />
+    <Bts2009StartAllOrchestrations
+      ApplicationName="$(BizTalkApplicationName)"
+			ManagementDatabaseConnectionString="$(BizTalkManagementDatabaseConnectionString)" />
+  </Target>
+
+  <Target Name="AfterStartBizTalkApplicationCustom">
+    <!-- To be overridden in inheriting script. -->
+  </Target>
+
+  <Target Name="StartBizTalkApplication" DependsOnTargets="$(StartBizTalkApplicationDependsOn)" />
+
+  <Target Name="ExportBizTalkApplicationMessage">
+    <Message Importance="high" Text="Exporting BizTalk application." />
+  </Target>
+
+  <Target Name="BeforeExportBizTalkApplicationCustom">
+    <!-- To be overridden in inheriting script. -->
+  </Target>
+
+  <Target Name="CoreExportBizTalkApplication" DependsOnTargets="ValidateBizTalkApplicationName;ValidateBizTalkInstallerPackageOutputPath">
+    <Exec
+      Command='BTSTask ExportApp /ApplicationName:$(BizTalkApplicationName) /Package:$(BizTalkInstallerPackageOutputPath)' />
+  </Target>
+
+  <Target Name="AfterExportBizTalkApplicationCustom">
+    <!-- To be overridden in inheriting script. -->
+  </Target>
+
+  <Target Name="ExportBizTalkApplication" DependsOnTargets="$(ExportBizTalkApplicationDependsOn)" />
+
+  <Target Name="BuildBizTalkApplication" DependsOnTargets="$(BuildBizTalkApplicationDependsOn)" />
+
+  <!-- BizTalk Properties and Targets - End -->
+  
+  <PropertyGroup>
+    <RunTestsForConfigurationDependsOn>
+      BeforeRunTestsForConfigurationCustom;
+      BeforeRunTestsForConfiguration;
+      CoreRunTestsForConfiguration;
+      AfterRunTestsForConfigurationCustom
+    </RunTestsForConfigurationDependsOn>
+  </PropertyGroup>
+  
+  <Target Name="BeforeRunTestsForConfigurationCustom">
+    <!-- To be overridden in inheriting script. -->
+  </Target>
+
+  <Target Name="BeforeRunTestsForConfiguration">
+    <!-- Notify user that we will skip the deployment of the current configuration to BizTalk. -->
+    <Message 
+      Condition=" '$(BizTalkApplicationName)'!='' And '%(ConfigurationToBuild.FlavorToBuild)'=='$(Configuration)' And '%(ConfigurationToBuild.DeployToBizTalkApplicationForTestRun)'!='true' "
+      Importance="high" 
+      Text="Skipping the deployment of '$(Configuration)' configuration to BizTalk." />
+    <!-- Notify user that we will deploy the current configuration to BizTalk and initialise the Hosts/Handlers. -->
+    <Message
+      Condition=" '$(BizTalkApplicationName)'!='' And '%(ConfigurationToBuild.FlavorToBuild)'=='$(Configuration)' And '%(ConfigurationToBuild.DeployToBizTalkApplicationForTestRun)'=='true' And '%(ConfigurationToBuild.InitialiseBizTalkHostsAndHandlers)'=='true' "
+      Importance="high"
+      Text="Deploying '$(Configuration)' configuration to BizTalk (initialising Hosts and Handlers)." />
+    <MSBuild
+      Condition=" '$(BizTalkApplicationName)'!='' And '%(ConfigurationToBuild.FlavorToBuild)'=='$(Configuration)' And '%(ConfigurationToBuild.DeployToBizTalkApplicationForTestRun)'=='true' And '%(ConfigurationToBuild.InitialiseBizTalkHostsAndHandlers)'=='true' "
+      Projects="$(MSBuildProjectFullPath)"
+      Targets="BuildBizTalkApplication"
+      Properties="SolutionConfigurationToDeploy=$(Configuration)" />
+    <!-- Notify user that we will deploy the current configuration to BizTalk but not initialise the Hosts/Handlers. -->
+    <Message
+      Condition=" '$(BizTalkApplicationName)'!='' And '%(ConfigurationToBuild.FlavorToBuild)'=='$(Configuration)' And '%(ConfigurationToBuild.DeployToBizTalkApplicationForTestRun)'=='true' And '%(ConfigurationToBuild.InitialiseBizTalkHostsAndHandlers)'!='true' "
+      Importance="high"
+      Text="Deploying '$(Configuration)' configuration to BizTalk (not initialising Hosts and Handlers)." />
+    <MSBuild
+      Condition=" '$(BizTalkApplicationName)'!='' And '%(ConfigurationToBuild.FlavorToBuild)'=='$(Configuration)' And '%(ConfigurationToBuild.DeployToBizTalkApplicationForTestRun)'=='true' And '%(ConfigurationToBuild.InitialiseBizTalkHostsAndHandlers)'!='true' "
+      Projects="$(MSBuildProjectFullPath)"
+      Targets="StopBizTalkApplication;RemoveBizTalkApplicationAssembliesFromGac;RemoveBizTalkApplication;CreateBizTalkApplication;StartBizTalkApplication;ExportBizTalkApplication"
+      Properties="SolutionConfigurationToDeploy=$(Configuration)" />
+  </Target>
+  
+  <Target Name="CoreRunTestsForConfiguration">
+    <Message
+      Importance="high"
+      Text="Running tests for configuration '$(Configuration)'." />
+    <!-- "ToolsVersion" property applied to "FrameworkVersion" attribute intentionally. -->
+    <StealFocus.MSBuild.Tasks.MSTest
+      BinariesRootPath="$(BuildDir)"
+      FlavorToBuild="$(Configuration)"
+      FrameworkVersion="$(FrameworkVersion)"
+      TestContainerSearchFilters="$(MSTestTestContainerSearchFilters)"
+      TestRunConfigFilePath="$(MSTestTestRunConfigFilePath)"
+      WorkingDirectory="..\" />
+  </Target>
+
+  <Target Name="AfterRunTestsForConfigurationCustom">
+    <!-- To be overridden in inheriting script. -->
+  </Target>
+
+  <Target Name="RunTestsForConfiguration" DependsOnTargets="$(RunTestsForConfigurationDependsOn)" />
+
   <Target Name="BeforeRunTestsCustom">
     <!-- To be overridden in inheriting script. -->
   </Target>
 
   <Target Name="CoreRunTests">
     <Message
-      Importance="high" 
+      Importance="high"
       Text="Running tests." />
-    <MSTest 
-      BinariesRootPath="$(BuildDir)" 
-      FlavorToBuild="%(ConfigurationToBuild.FlavorToBuild)" 
-      FrameworkVersion="$(FrameworkVersion)"
-      TestContainerSearchFilters="$(MSTestTestContainerSearchFilters)" 
-      TestRunConfigFilePath="$(MSTestTestRunConfigFilePath)" 
-      WorkingDirectory="..\" />
+    <MSBuild
+      Projects="$(MSBuildProjectFile)"
+      Targets="RunTestsForConfiguration"
+      Properties="BuildDir=$(BuildDir);Configuration=%(ConfigurationToBuild.FlavorToBuild);FrameworkVersion=$(FrameworkVersion);MSTestTestContainerSearchFilters=$(MSTestTestContainerSearchFilters);MSTestTestRunConfigFilePath=$(MSTestTestRunConfigFilePath)" />
   </Target>
 
   <Target Name="AfterRunTestsCustom">
