@@ -600,7 +600,9 @@
   </Target>
 
   <Target Name="StopBizTalkApplicationMessage">
-    <Message Importance="high" Text="Stopping BizTalk application." />
+    <Message 
+      Importance="high" 
+      Text="Stopping BizTalk Application '$(BizTalkApplicationName)'." />
   </Target>
 
   <Target Name="BeforeStopBizTalkApplicationCustom">
@@ -621,7 +623,9 @@
   <Target Name="StopBizTalkApplication" DependsOnTargets="$(StopBizTalkApplicationDependsOn)" />
 
   <Target Name="RemoveBizTalkApplicationAssembliesFromGacMessage">
-    <Message Importance="high" Text="Removing BizTalk assemblies from GAC." />
+    <Message 
+      Importance="high" 
+      Text="Removing Solution's BizTalk Assemblies from the Global Assembly Cache (GAC)." />
   </Target>
 
   <Target Name="BeforeRemoveBizTalkApplicationAssembliesFromGacCustom">
@@ -647,7 +651,9 @@
   <Target Name="RemoveBizTalkApplicationAssembliesFromGac" DependsOnTargets="$(RemoveBizTalkApplicationAssembliesFromGacDependsOn)" />
 
   <Target Name="RemoveBizTalkApplicationMessage">
-    <Message Importance="high" Text="Removing BizTalk application." />
+    <Message 
+      Importance="high" 
+      Text="Removing BizTalk Application '$(BizTalkApplicationName)'." />
   </Target>
 
   <Target Name="BeforeRemoveBizTalkApplicationCustom">
@@ -667,7 +673,9 @@
   <Target Name="RemoveBizTalkApplication" DependsOnTargets="$(RemoveBizTalkApplicationDependsOn)" />
 
   <Target Name="DeleteBizTalkHandlersMessage">
-    <Message Importance="high" Text="Deleting BizTalk Handlers." />
+    <Message 
+      Importance="high" 
+      Text="Deleting BizTalk Send and Receive Handlers for '$(BizTalkApplicationName)'." />
   </Target>
 
   <Target Name="BeforeDeleteBizTalkHandlersCustom">
@@ -700,7 +708,9 @@
   <Target Name="DeleteBizTalkHandlers" DependsOnTargets="$(DeleteBizTalkHandlersDependsOn)" />
   
   <Target Name="DeleteBizTalkHostsMessage">
-    <Message Importance="high" Text="Deleting BizTalk Hosts." />
+    <Message 
+      Importance="high" 
+      Text="Deleting BizTalk Hosts and Host Instances for '$(BizTalkApplicationName)'." />
   </Target>
 
   <Target Name="BeforeDeleteBizTalkHostsCustom">
@@ -723,7 +733,9 @@
   <Target Name="DeleteBizTalkHosts" DependsOnTargets="$(DeleteBizTalkHostsDependsOn)" />
   
   <Target Name="CreateBizTalkHostsMessage">
-    <Message Importance="high" Text="Creating BizTalk Hosts." />
+    <Message 
+      Importance="high" 
+      Text="Creating BizTalk Hosts and Host Instances for '$(BizTalkApplicationName)'." />
   </Target>
 
   <Target Name="BeforeCreateBizTalkHostsCustom">
@@ -776,7 +788,9 @@
   <Target Name="CreateBizTalkHosts" DependsOnTargets="$(CreateBizTalkHostsDependsOn)" />
   
   <Target Name="CreateBizTalkHandlersMessage">
-    <Message Importance="high" Text="Creating BizTalk Handlers." />
+    <Message 
+      Importance="high" 
+      Text="Creating BizTalk Handlers for '$(BizTalkApplicationName)'." />
   </Target>
 
   <Target Name="BeforeCreateBizTalkHandlersCustom">
@@ -801,7 +815,9 @@
   <Target Name="CreateBizTalkHandlers" DependsOnTargets="$(CreateBizTalkHandlersDependsOn)" />
   
   <Target Name="CreateBizTalkApplicationMessage">
-    <Message Importance="high" Text="Creating BizTalk application." />
+    <Message 
+      Importance="high" 
+      Text="Creating BizTalk Application '$(BizTalkApplicationName)'." />
   </Target>
 
   <Target Name="BeforeCreateBizTalkApplicationCustom">
@@ -809,6 +825,9 @@
   </Target>
 
   <Target Name="CoreCreateBizTalkApplication" DependsOnTargets="ValidateBizTalkApplicationName;ValidateBizTalkBindingLog;ValidateBizTalkConfigDatabaseName;ValidateBizTalkDatabaseServerName;ValidateBizTalkDevelopmentTargetEnvironmentName;ValidateBizTalkInstallDirectory">
+    <Message
+      Importance="high"
+      Text="Adding BizTalk Application '$(BizTalkApplicationName)'." />
     <Exec
       Command="BTSTask AddApp -ApplicationName:$(BizTalkApplicationName) -Description:$(BizTalkApplicationName) -Server:$(BizTalkDatabaseServerName) -Database:$(BizTalkConfigDatabaseName)" />
     <!-- Check Assembly paths. -->
@@ -820,13 +839,22 @@
       Condition=" !Exists('%(BindingsFile.FullPath)') "
       Text=" The '%(BindingsFile.TargetEnvironment)' Bindings file was not found. Was the given path valid?" />
     <!-- Add Resources. -->
+    <Message
+      Importance="high"
+      Text="Adding Binding files to BizTalk Application '$(BizTalkApplicationName)'." />
     <Exec
       Command='BTSTask AddResource /Source:"%(BindingsFile.FullPath)" /Property:TargetEnvironment="%(BindingsFile.TargetEnvironment)" /ApplicationName:"$(BizTalkApplicationName)" /Type:System.BizTalk:BizTalkBinding' />
+    <Message
+      Importance="high"
+      Text="Adding Assemblies to BizTalk Application '$(BizTalkApplicationName)'." />
     <Exec
       Command='BTSTask AddResource /Source:"%(BizTalkAssembly.FullPath)" /ApplicationName:"$(BizTalkApplicationName)" /Type:System.BizTalk:BizTalkAssembly /Overwrite /Destination:"$(BizTalkInstallDirectory)\%(BizTalkAssembly.Filename).%(BizTalkAssembly.Extension)" /Options:%(BizTalkAssembly.InstallOptions)' />
     <!-- Delete any old binding log and then Bind. -->
     <Delete
       Files="$(BizTalkBindingLog)" />
+    <Message
+      Importance="high"
+      Text="Importing Bindings for '$(BizTalkDevelopmentTargetEnvironmentName)' environment to BizTalk Application '$(BizTalkApplicationName)'." />
     <Exec
       Condition=" '%(BindingsFile.TargetEnvironment)'=='$(BizTalkDevelopmentTargetEnvironmentName)' "
       Command='BTSTask ImportBindings -Source:"%(BindingsFile.FullPath)" -ApplicationName:$(BizTalkApplicationName) > $(BizTalkBindingLog)' />
@@ -839,7 +867,9 @@
   <Target Name="CreateBizTalkApplication" DependsOnTargets="$(CreateBizTalkApplicationDependsOn)" />
 
   <Target Name="StartBizTalkApplicationMessage">
-    <Message Importance="high" Text="Starting BizTalk application." />
+    <Message 
+      Importance="high" 
+      Text="Starting BizTalk Application '$(BizTalkApplicationName)'." />
   </Target>
 
   <Target Name="BeforeStartBizTalkApplicationCustom">
@@ -847,15 +877,33 @@
   </Target>
 
   <Target Name="CoreStartBizTalkApplication" DependsOnTargets="ValidateBizTalkApplicationName;ValidateBizTalkManagementDatabaseConnectionString">
+    <Message
+      Importance="high"
+      Text="Starting all BizTalk Send Ports for '$(BizTalkApplicationName)'." />
     <Bts2009StartAllSendPorts
       ApplicationName="$(BizTalkApplicationName)"
       ManagementDatabaseConnectionString="$(BizTalkManagementDatabaseConnectionString)" />
+    <Message
+      Importance="high"
+      Text="Starting all BizTalk Receive Locations for '$(BizTalkApplicationName)'." />
     <Bts2009EnableAllReceiveLocations
       ApplicationName="$(BizTalkApplicationName)"
 			ManagementDatabaseConnectionString="$(BizTalkManagementDatabaseConnectionString)" />
+    <Message
+      Importance="high"
+      Text="Starting all BizTalk Orchestrations for '$(BizTalkApplicationName)'." />
     <Bts2009StartAllOrchestrations
       ApplicationName="$(BizTalkApplicationName)"
 			ManagementDatabaseConnectionString="$(BizTalkManagementDatabaseConnectionString)" />
+    <Message
+      Importance="high"
+      Text="Starting all BizTalk Hosts for '$(BizTalkApplicationName)'." />
+    <Bts2009StartHost
+      HostName="%(BizTalkReceiveHost.Identity)" />
+    <Bts2009StartHost
+      HostName="%(BizTalkProcessHost.Identity)" />
+    <Bts2009StartHost
+      HostName="%(BizTalkSendHost.Identity)" />
   </Target>
 
   <Target Name="AfterStartBizTalkApplicationCustom">
@@ -865,7 +913,9 @@
   <Target Name="StartBizTalkApplication" DependsOnTargets="$(StartBizTalkApplicationDependsOn)" />
 
   <Target Name="ExportBizTalkApplicationMessage">
-    <Message Importance="high" Text="Exporting BizTalk application." />
+    <Message 
+      Importance="high" 
+      Text="Exporting BizTalk Application '$(BizTalkApplicationName)'." />
   </Target>
 
   <Target Name="BeforeExportBizTalkApplicationCustom">
