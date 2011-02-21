@@ -9,6 +9,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "MSBuild", "MSBuild", "{1B04
 	ProjectSection(SolutionItems) = preProject
 		Artefacts\MSBuild\StealFocus.Kata.Build.targets = Artefacts\MSBuild\StealFocus.Kata.Build.targets
 		Artefacts\MSBuild\StealFocus.Kata.Project.Assembly.targets = Artefacts\MSBuild\StealFocus.Kata.Project.Assembly.targets
+		Artefacts\MSBuild\StealFocus.Kata.Project.BizTalk2009.targets = Artefacts\MSBuild\StealFocus.Kata.Project.BizTalk2009.targets
 		Artefacts\MSBuild\StealFocus.Kata.Project.CSharp.targets = Artefacts\MSBuild\StealFocus.Kata.Project.CSharp.targets
 		Artefacts\MSBuild\StealFocus.Kata.Project.targets = Artefacts\MSBuild\StealFocus.Kata.Project.targets
 		Artefacts\MSBuild\StealFocus.Kata.Project.VisualBasic.targets = Artefacts\MSBuild\StealFocus.Kata.Project.VisualBasic.targets

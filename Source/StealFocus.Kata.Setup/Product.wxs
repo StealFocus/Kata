@@ -44,6 +44,10 @@
                     Name='StealFocus.Kata.Project.Assembly.targets'
                     Source='..\Artefacts\MSBuild\StealFocus.Kata.Project.Assembly.targets' />
                   <File
+                    Id='StealFocus.Kata.Project.BizTalk2009.targets'
+                    Name='StealFocus.Kata.Project.BizTalk2009.targets'
+                    Source='..\Artefacts\MSBuild\StealFocus.Kata.Project.BizTalk2009.targets' />
+                  <File
                     Id='StealFocus.Kata.Project.CSharp.targets'
                     Name='StealFocus.Kata.Project.CSharp.targets'
                     Source='..\Artefacts\MSBuild\StealFocus.Kata.Project.CSharp.targets' />
