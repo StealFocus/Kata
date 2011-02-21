@@ -838,6 +838,13 @@
     <Error
       Condition=" !Exists('%(BindingsFile.FullPath)') "
       Text=" The '%(BindingsFile.TargetEnvironment)' Bindings file was not found. Was the given path valid?" />
+    <!-- Update version number in Bindings files. -->
+    <File.RegEx
+      Condition=" '$(BuildLabelNumber)'!='$(DefaultBuildOrVersionNumber)' "
+      Path="%(BindingsFile.FullPath)"
+      RegularExpression="$(DefaultBuildOrVersionNumber)"
+      NewValue="$(BuildLabelNumber)"
+      Force="true" />
     <!-- Add Resources. -->
     <Message
       Importance="high"
