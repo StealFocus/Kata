@@ -145,11 +145,9 @@
     <Message Text="VersionNumber ('$(VersionNumber)') applied as 'AssemblyVersion'." />
     <Message 
       Condition=" '%(XmlFileCheckerFilesToCheck.Identity)'!='' And ('$(IsCommandLineBuild)'=='true' Or '$(IsDesktopBuild)'!='true') And '$(Environment)'=='Development' " 
-      Importance="high" 
       Text="Checking the following project files with XmlCheckerTask and configuration '$(XmlFileCheckerConfigurationFilePath)'." />
     <Message 
       Condition=" '%(XmlFileCheckerFilesToCheck.Identity)'!='' And ('$(IsCommandLineBuild)'=='true' Or '$(IsDesktopBuild)'!='true') And '$(Environment)'=='Development' " 
-      Importance="high" 
       Text=" - %(XmlFileCheckerFilesToCheck.Identity)" />
     <XmlFileChecker
       Condition=" ('$(IsCommandLineBuild)'=='true' Or '$(IsDesktopBuild)'!='true') And '$(Environment)'=='Development' "
@@ -187,11 +185,9 @@
   <Target Name="BeforeRebuild" DependsOnTargets="GenerateAssemblyInfoFile">
     <Message
       Condition=" '%(XmlFileCheckerFilesToCheck.Identity)'!='' And '$(IsDesktopBuild)'=='true' And '$(Environment)'=='Development' "
-      Importance="high"
       Text="Checking the following project files with XmlCheckerTask and configuration '$(XmlFileCheckerConfigurationFilePath)'." />
     <Message
       Condition=" '%(XmlFileCheckerFilesToCheck.Identity)'!='' And '$(IsDesktopBuild)'=='true' And '$(Environment)'=='Development' "
-      Importance="high"
       Text=" - %(XmlFileCheckerFilesToCheck.Identity)" />
     <XmlFileChecker
       Condition=" '$(IsDesktopBuild)'=='true' And '$(Environment)'=='Development' "
