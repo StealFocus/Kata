@@ -533,10 +533,19 @@
       Text="Please provide a 'BizTalkDevelopmentTargetEnvironmentName' MSBuild property." />
   </Target>
 
-  <Target Name="ValidateBizTalkGacAssembliesFilter">
+  <Target Name="ValidateBizTalkGacFilters">
     <Error
-      Condition=" '$(BizTalkGacAssembliesFilter)'=='' "
-      Text="Please provide a 'BizTalkGacAssembliesFilter' MSBuild property." />
+      Condition=" '$(BizTalkGacAssemblyNameFilter)'=='' "
+      Text="Please provide a 'BizTalkGacAssemblyNameFilter' MSBuild property." />
+    <Error
+      Condition=" '$(BizTalkGacLocaleFilter)'=='' "
+      Text="Please provide a 'BizTalkGacLocaleFilter' MSBuild property." />
+    <Error
+      Condition=" '$(BizTalkGacPublicKeyTokenFilter)'=='' "
+      Text="Please provide a 'BizTalkGacPublicKeyTokenFilter' MSBuild property." />
+    <Error
+      Condition=" '$(BizTalkGacVersionFilter)'=='' "
+      Text="Please provide a 'BizTalkGacVersionFilter' MSBuild property." />
   </Target>
 
   <Target Name="ValidateBizTalkHostWindowsGroupName">
@@ -563,40 +572,16 @@
       Text="Please provide a 'BizTalkManagementDatabaseConnectionString' MSBuild property." />
   </Target>
 
-  <Target Name="ValidateBizTalkProcessHosts">
+  <Target Name="ValidateBizTalkHosts">
     <Error
-      Condition=" '%(BizTalkProcessHost.Identity)'=='' "
-      Text="Please populate a 'BizTalkProcessHost' MSBuild Item Group." />
-  </Target>
-
-  <Target Name="ValidateBizTalkReceiveHosts">
-    <Error
-      Condition=" '%(BizTalkReceiveHost.Identity)'=='' "
-      Text="Please populate a 'BizTalkReceiveHost' MSBuild Item Group." />
-  </Target>
-
-  <Target Name="ValidateBizTalkSendHosts">
-    <Error
-      Condition=" '%(BizTalkSendHost.Identity)'=='' "
-      Text="Please populate a 'BizTalkSendHost' MSBuild Item Group." />
+      Condition=" '%(BizTalkHost.Identity)'=='' "
+      Text="Please populate a 'BizTalkHost' MSBuild Item Group with metadata 'Username', 'Password', 'HostTracking', 'HostType', 'IsDefault' and 'Trusted'." />
   </Target>
 
   <Target Name="ValidateBizTalkServerName">
     <Error
       Condition=" '$()'=='BizTalkServerName' "
       Text="Please provide a 'BizTalkServerName' MSBuild property." />
-  </Target>
-
-  <Target Name="ValidateBizTalkServicePassword">
-    <Error
-      Condition=" '$(BizTalkServicePassword)'=='' "
-      Text="Please provide a 'BizTalkServicePassword' MSBuild property." />
-  </Target>
-
-  <Target Name="ValidateBizTalkServiceUsername">
-    <Error
-      Condition=" '$(BizTalkServiceUsername)'=='' "
-      Text="Please provide a 'BizTalkServiceUsername' MSBuild property." />
   </Target>
 
   <Target Name="StopBizTalkApplicationMessage">
@@ -632,15 +617,15 @@
     <!-- To be overridden in inheriting script. -->
   </Target>
 
-  <Target Name="CoreRemoveBizTalkApplicationAssembliesFromGac" DependsOnTargets="ValidateBizTalkGacAssembliesFilter">
+  <Target Name="CoreRemoveBizTalkApplicationAssembliesFromGac" DependsOnTargets="ValidateBizTalkGacFilters">
     <Message
       Importance="high"
-      Text="Deleting assemblies from the GAC matching '$(BizTalkGacAssembliesFilter)'." />
+      Text="Deleting assemblies from the GAC matching '$(BizTalkGacAssemblyNameFilter), Version=$(BizTalkGacVersionFilter), Culture=$(BizTalkGacLocaleFilter), PublicKeyToken=$(BizTalkGacPublicKeyTokenFilter)'." />
     <GacUninstall
-      AssemblyName="$(BizTalkGacAssembliesFilter)"
-      Locale="*"
-      PublicKeyToken="*"
-      Version="*"
+      AssemblyName="$(BizTalkGacAssemblyNameFilter)"
+      Locale="$(BizTalkGacLocaleFilter)"
+      PublicKeyToken="$(BizTalkGacPublicKeyTokenFilter)"
+      Version="$(BizTalkGacVersionFilter)"
       FrameworkVersion="$(FrameworkVersion)" />
   </Target>
 
@@ -682,23 +667,15 @@
     <!-- To be overridden in inheriting script. -->
   </Target>
 
-  <Target Name="CoreDeleteBizTalkHandlers" DependsOnTargets="ValidateBizTalkProcessHosts;ValidateBizTalkReceiveHosts;ValidateBizTalkSendHosts">
+  <Target Name="CoreDeleteBizTalkHandlers" DependsOnTargets="ValidateBizTalkHosts">
     <Bts2009StopHost
-      HostName="%(BizTalkReceiveHost.Identity)" />
-    <Bts2009StopHost
-      HostName="%(BizTalkProcessHost.Identity)" />
-    <Bts2009StopHost
-      HostName="%(BizTalkSendHost.Identity)" />
+      HostName="%(BizTalkHost.Identity)" />
     <Bts2009CleanHostQueue
-      HostName="%(BizTalkReceiveHost.Identity)" />
-    <Bts2009CleanHostQueue
-      HostName="%(BizTalkProcessHost.Identity)" />
-    <Bts2009CleanHostQueue
-      HostName="%(BizTalkSendHost.Identity)" />
+      HostName="%(BizTalkHost.Identity)" />
     <Bts2009DeleteAllReceiveHandlers
-      HostName="%(BizTalkReceiveHost.Identity)" />
+      HostName="%(BizTalkHost.Identity)" />
     <Bts2009DeleteAllSendHandlers
-      HostName="%(BizTalkSendHost.Identity)" />
+      HostName="%(BizTalkHost.Identity)" />
   </Target>
 
   <Target Name="AfterDeleteBizTalkHandlersCustom">
@@ -717,13 +694,13 @@
     <!-- To be overridden in inheriting script. -->
   </Target>
 
-  <Target Name="CoreDeleteBizTalkHosts" DependsOnTargets="ValidateBizTalkProcessHosts;ValidateBizTalkReceiveHosts;ValidateBizTalkSendHosts">
+  <Target Name="CoreDeleteBizTalkHosts" DependsOnTargets="ValidateBizTalkHosts">
     <Bts2009DeleteHost
-      HostName="%(BizTalkReceiveHost.Identity)" />
+      HostName="%(BizTalkHost.Identity)" />
     <Bts2009DeleteHost
-      HostName="%(BizTalkProcessHost.Identity)" />
+      HostName="%(BizTalkHost.Identity)" />
     <Bts2009DeleteHost
-      HostName="%(BizTalkSendHost.Identity)" />
+      HostName="%(BizTalkHost.Identity)" />
   </Target>
 
   <Target Name="AfterDeleteBizTalkHostsCustom">
@@ -742,43 +719,19 @@
     <!-- To be overridden in inheriting script. -->
   </Target>
 
-  <Target Name="CoreCreateBizTalkHosts" DependsOnTargets="ValidateBizTalkHostWindowsGroupName;ValidateBizTalkProcessHosts;ValidateBizTalkReceiveHosts;ValidateBizTalkSendHosts;ValidateBizTalkServerName;ValidateBizTalkServicePassword;ValidateBizTalkServiceUsername">
+  <Target Name="CoreCreateBizTalkHosts" DependsOnTargets="ValidateBizTalkHostWindowsGroupName;ValidateBizTalkHosts;ValidateBizTalkServerName">
     <Bts2009CreateHost
-      HostName="%(BizTalkReceiveHost.Identity)"
-      HostTracking="true"
-      HostType="InProcess"
-      IsDefault="false"
-      Trusted="false"
+      HostName="%(BizTalkHost.Identity)"
+      HostTracking="%(BizTalkHost.HostTracking)"
+      HostType="%(BizTalkHost.HostType)"
+      IsDefault="%(BizTalkHost.IsDefault)"
+      Trusted="%(BizTalkHost.Trusted)"
       WindowsGroupName="$(BizTalkHostWindowsGroupName)" />
-    <Bts2009CreateHost
-      HostName="%(BizTalkProcessHost.Identity)"
-			HostTracking="true"
-			HostType="InProcess"
-			IsDefault="false"
-			Trusted="false"
-			WindowsGroupName="$(BizTalkHostWindowsGroupName)" />
-    <Bts2009CreateHost
-      HostName="%(BizTalkSendHost.Identity)"
-			HostTracking="true"
-			HostType="InProcess"
-			IsDefault="false"
-			Trusted="false"
-			WindowsGroupName="$(BizTalkHostWindowsGroupName)" />
     <Bts2009CreateHostInstance
-      HostName="%(BizTalkReceiveHost.Identity)"
+      HostName="%(BizTalkHost.Identity)"
       ServerName="$(BizTalkServerName)"
-      Username="$(BizTalkServiceUsername)"
-      Password="$(BizTalkServicePassword)" />
-    <Bts2009CreateHostInstance
-      HostName="%(BizTalkProcessHost.Identity)"
-			ServerName="$(BizTalkServerName)"
-			Username="$(BizTalkServiceUsername)"
-			Password="$(BizTalkServicePassword)" />
-    <Bts2009CreateHostInstance
-      HostName="%(BizTalkSendHost.Identity)"
-			ServerName="$(BizTalkServerName)"
-			Username="$(BizTalkServiceUsername)"
-			Password="$(BizTalkServicePassword)" />
+      Username="%(BizTalkHost.Username)"
+      Password="%(BizTalkHost.Password)" />
   </Target>
 
   <Target Name="AfterCreateBizTalkHostsCustom">
@@ -906,11 +859,7 @@
       Importance="high"
       Text="Starting all BizTalk Hosts for '$(BizTalkApplicationName)'." />
     <Bts2009StartHost
-      HostName="%(BizTalkReceiveHost.Identity)" />
-    <Bts2009StartHost
-      HostName="%(BizTalkProcessHost.Identity)" />
-    <Bts2009StartHost
-      HostName="%(BizTalkSendHost.Identity)" />
+      HostName="%(BizTalkHost.Identity)" />
   </Target>
 
   <Target Name="AfterStartBizTalkApplicationCustom">
