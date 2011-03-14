@@ -808,7 +808,7 @@
       Importance="high"
       Text="Adding Assemblies to BizTalk Application '$(BizTalkApplicationName)'." />
     <Exec
-      Command='BTSTask AddResource /Source:"%(BizTalkAssembly.FullPath)" /ApplicationName:"$(BizTalkApplicationName)" /Type:System.BizTalk:BizTalkAssembly /Overwrite /Destination:"$(BizTalkInstallDirectory)\%(BizTalkAssembly.Filename).%(BizTalkAssembly.Extension)" /Options:%(BizTalkAssembly.InstallOptions)' />
+      Command='BTSTask AddResource /Source:"%(BizTalkAssembly.FullPath)" /ApplicationName:"$(BizTalkApplicationName)" /Type:%(BizTalkAssembly.Type) /Overwrite /Destination:"$(BizTalkInstallDirectory)\%(BizTalkAssembly.Filename).%(BizTalkAssembly.Extension)" /Options:%(BizTalkAssembly.InstallOptions)' />
     <!-- Delete any old binding log and then Bind. -->
     <Delete
       Files="$(BizTalkBindingLog)" />
