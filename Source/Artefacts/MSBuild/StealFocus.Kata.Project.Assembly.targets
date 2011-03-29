@@ -131,7 +131,8 @@
       DestinationFiles="@(WebProjectBinFolderFiles->'$(ProjectDir)bin\%(RecursiveDir)%(Filename)%(Extension)')" />
   </Target>
 
-  <Target Name="BeforeBuild" DependsOnTargets="GenerateAssemblyInfoFile">
+  <!-- "$(BeforeBuildDependsOn)" added to "DependsOnTargets" for BizTalk 2009 support. -->
+  <Target Name="BeforeBuild" DependsOnTargets="GenerateAssemblyInfoFile;$(BeforeBuildDependsOn)">
     <Message
       Condition=" '$(IsCommandLineBuild)'=='true' "
       Importance="high"
@@ -174,7 +175,8 @@
       Targets="CopyConfigurationFilesToProjectDir" />
   </Target>
 
-  <Target Name="AfterBuild" DependsOnTargets="RestoreBinariesToWebProjectBin">
+  <!-- "$(AfterBuildDependsOn)" added to "DependsOnTargets" for BizTalk 2009 support. -->
+  <Target Name="AfterBuild" DependsOnTargets="RestoreBinariesToWebProjectBin;$(AfterBuildDependsOn)">
     <!-- This "AspNetCompiler" is here for ASP.NET MVC Projects. -->
     <AspNetCompiler
       Condition=" '$(MvcBuildViews)'=='true' "
@@ -216,7 +218,8 @@
 
   <Target Name="AfterCompile" />
 
-  <Target Name="BeforeClean" />
+  <!-- "$(BeforeCleanDependsOn)" added to "DependsOnTargets" for BizTalk 2009 support. -->
+  <Target Name="BeforeClean" DependsOnTargets="$(BeforeCleanDependsOn)" />
 
   <Target Name="AfterClean" />
 
