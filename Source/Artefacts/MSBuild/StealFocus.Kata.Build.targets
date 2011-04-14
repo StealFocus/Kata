@@ -471,18 +471,24 @@
       CoreCreateBizTalkApplication;
       AfterCreateBizTalkApplicationCustom
     </CreateBizTalkApplicationDependsOn>
-    <StartBizTalkApplicationDependsOn>
-      StartBizTalkApplicationMessage;
-      BeforeStartBizTalkApplicationCustom;
-      CoreStartBizTalkApplication;
-      AfterStartBizTalkApplicationCustom
-    </StartBizTalkApplicationDependsOn>
     <ExportBizTalkApplicationDependsOn>
       ExportBizTalkApplicationMessage;
       BeforeExportBizTalkApplicationCustom;
       CoreExportBizTalkApplication;
       AfterExportBizTalkApplicationCustom
     </ExportBizTalkApplicationDependsOn>
+    <ImportBindingsForBizTalkApplicationDependsOn>
+      ImportBindingsForBizTalkApplicationMessage;
+      BeforeImportBindingsForBizTalkApplicationCustom;
+      CoreImportBindingsForBizTalkApplication;
+      AfterImportBindingsForBizTalkApplicationCustom;
+    </ImportBindingsForBizTalkApplicationDependsOn>
+    <StartBizTalkApplicationDependsOn>
+      StartBizTalkApplicationMessage;
+      BeforeStartBizTalkApplicationCustom;
+      CoreStartBizTalkApplication;
+      AfterStartBizTalkApplicationCustom
+    </StartBizTalkApplicationDependsOn>
     <BuildBizTalkApplicationDependsOn>
       StopBizTalkApplication;
       RemoveBizTalkApplicationAssembliesFromGac;
@@ -492,8 +498,9 @@
       CreateBizTalkHosts;
       CreateBizTalkHandlers;
       CreateBizTalkApplication;
-      StartBizTalkApplication;
-      ExportBizTalkApplication
+      ExportBizTalkApplication;
+      ImportBindingsForBizTalkApplication;
+      StartBizTalkApplication
     </BuildBizTalkApplicationDependsOn>
   </PropertyGroup>
 
@@ -777,7 +784,7 @@
     <!-- To be overridden in inheriting script. -->
   </Target>
 
-  <Target Name="CoreCreateBizTalkApplication" DependsOnTargets="ValidateBizTalkApplicationName;ValidateBizTalkBindingLog;ValidateBizTalkConfigDatabaseName;ValidateBizTalkDatabaseServerName;ValidateBizTalkDevelopmentTargetEnvironmentName;ValidateBizTalkInstallDirectory">
+  <Target Name="CoreCreateBizTalkApplication" DependsOnTargets="ValidateBizTalkApplicationName;ValidateBizTalkConfigDatabaseName;ValidateBizTalkDatabaseServerName;ValidateBizTalkInstallDirectory">
     <Message
       Importance="high"
       Text="Adding BizTalk Application '$(BizTalkApplicationName)'." />
@@ -809,6 +816,46 @@
       Text="Adding Assemblies to BizTalk Application '$(BizTalkApplicationName)'." />
     <Exec
       Command='BTSTask AddResource /Source:"%(BizTalkAssembly.FullPath)" /ApplicationName:"$(BizTalkApplicationName)" /Type:%(BizTalkAssembly.Type) /Overwrite /Destination:"$(BizTalkInstallDirectory)\%(BizTalkAssembly.Filename).%(BizTalkAssembly.Extension)" /Options:%(BizTalkAssembly.InstallOptions)' />
+  </Target>
+
+  <Target Name="AfterCreateBizTalkApplicationCustom">
+    <!-- To be overridden in inheriting script. -->
+  </Target>
+
+  <Target Name="CreateBizTalkApplication" DependsOnTargets="$(CreateBizTalkApplicationDependsOn)" />
+
+  <Target Name="ExportBizTalkApplicationMessage">
+    <Message
+      Importance="high"
+      Text="Exporting BizTalk Application '$(BizTalkApplicationName)'." />
+  </Target>
+
+  <Target Name="BeforeExportBizTalkApplicationCustom">
+    <!-- To be overridden in inheriting script. -->
+  </Target>
+
+  <Target Name="CoreExportBizTalkApplication" DependsOnTargets="ValidateBizTalkApplicationName;ValidateBizTalkInstallerPackageOutputPath">
+    <Exec
+      Command='BTSTask ExportApp /ApplicationName:$(BizTalkApplicationName) /Package:$(BizTalkInstallerPackageOutputPath)' />
+  </Target>
+
+  <Target Name="AfterExportBizTalkApplicationCustom">
+    <!-- To be overridden in inheriting script. -->
+  </Target>
+
+  <Target Name="ExportBizTalkApplication" DependsOnTargets="$(ExportBizTalkApplicationDependsOn)" />
+
+  <Target Name="ImportBindingsForBizTalkApplicationMessage">
+    <Message
+      Importance="high"
+      Text="Importing bindings for BizTalk Application '$(BizTalkApplicationName)'." />
+  </Target>
+
+  <Target Name="BeforeImportBindingsForBizTalkApplicationCustom">
+    <!-- To be overridden in inheriting script. -->
+  </Target>
+
+  <Target Name="CoreImportBindingsForBizTalkApplication" DependsOnTargets="ValidateBizTalkApplicationName;ValidateBizTalkBindingLog;ValidateBizTalkDevelopmentTargetEnvironmentName">
     <!-- Delete any old binding log and then Bind. -->
     <Delete
       Files="$(BizTalkBindingLog)" />
@@ -820,11 +867,11 @@
       Command='BTSTask ImportBindings -Source:"%(BindingsFile.FullPath)" -ApplicationName:$(BizTalkApplicationName) > $(BizTalkBindingLog)' />
   </Target>
 
-  <Target Name="AfterCreateBizTalkApplicationCustom">
+  <Target Name="AfterImportBindingsForBizTalkApplicationCustom">
     <!-- To be overridden in inheriting script. -->
   </Target>
 
-  <Target Name="CreateBizTalkApplication" DependsOnTargets="$(CreateBizTalkApplicationDependsOn)" />
+  <Target Name="ImportBindingsForBizTalkApplication" DependsOnTargets="$(ImportBindingsForBizTalkApplicationDependsOn)" />
 
   <Target Name="StartBizTalkApplicationMessage">
     <Message 
@@ -867,27 +914,6 @@
   </Target>
 
   <Target Name="StartBizTalkApplication" DependsOnTargets="$(StartBizTalkApplicationDependsOn)" />
-
-  <Target Name="ExportBizTalkApplicationMessage">
-    <Message 
-      Importance="high" 
-      Text="Exporting BizTalk Application '$(BizTalkApplicationName)'." />
-  </Target>
-
-  <Target Name="BeforeExportBizTalkApplicationCustom">
-    <!-- To be overridden in inheriting script. -->
-  </Target>
-
-  <Target Name="CoreExportBizTalkApplication" DependsOnTargets="ValidateBizTalkApplicationName;ValidateBizTalkInstallerPackageOutputPath">
-    <Exec
-      Command='BTSTask ExportApp /ApplicationName:$(BizTalkApplicationName) /Package:$(BizTalkInstallerPackageOutputPath)' />
-  </Target>
-
-  <Target Name="AfterExportBizTalkApplicationCustom">
-    <!-- To be overridden in inheriting script. -->
-  </Target>
-
-  <Target Name="ExportBizTalkApplication" DependsOnTargets="$(ExportBizTalkApplicationDependsOn)" />
 
   <Target Name="BuildBizTalkApplication" DependsOnTargets="$(BuildBizTalkApplicationDependsOn)" />
 
