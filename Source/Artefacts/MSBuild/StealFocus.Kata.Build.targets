@@ -956,7 +956,7 @@
     <MSBuild
       Condition=" '$(BizTalkApplicationName)'!='' And '%(ConfigurationToBuild.FlavorToBuild)'=='$(Configuration)' And '%(ConfigurationToBuild.DeployToBizTalkApplicationForTestRun)'=='true' And '%(ConfigurationToBuild.InitialiseBizTalkHostsAndHandlers)'!='true' "
       Projects="$(MSBuildProjectFullPath)"
-      Targets="StopBizTalkApplication;RemoveBizTalkApplicationAssembliesFromGac;RemoveBizTalkApplication;CreateBizTalkApplication;StartBizTalkApplication;ExportBizTalkApplication"
+      Targets="StopBizTalkApplication;RemoveBizTalkApplicationAssembliesFromGac;RemoveBizTalkApplication;CreateBizTalkApplication;ExportBizTalkApplication;ImportBindingsForBizTalkApplication;StartBizTalkApplication"
       Properties="SolutionConfigurationToDeploy=$(Configuration)" />
   </Target>
   
