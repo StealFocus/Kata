@@ -423,6 +423,12 @@
   <Import Project="$(MSBuildExtensionsPath)\StealFocus\MSBuild\v1.0\StealFocus.MSBuild.Tasks.BizTalk2009.Targets" />
 
   <PropertyGroup>
+    <RemoveDependentBizTalkApplicationsDependsOn>
+      RemoveDependentBizTalkApplicationsMessage;
+      BeforeRemoveDependentBizTalkApplicationsCustom;
+      CoreRemoveDependentBizTalkApplications;
+      AfterRemoveDependentBizTalkApplicationsCustom
+    </RemoveDependentBizTalkApplicationsDependsOn>
     <StopBizTalkApplicationDependsOn>
       StopBizTalkApplicationMessage;
       BeforeStopBizTalkApplicationCustom;
@@ -490,6 +496,7 @@
       AfterStartBizTalkApplicationCustom
     </StartBizTalkApplicationDependsOn>
     <BuildBizTalkApplicationDependsOn>
+      RemoveDependentBizTalkApplications;
       StopBizTalkApplication;
       RemoveBizTalkApplicationAssembliesFromGac;
       RemoveBizTalkApplication;
@@ -591,6 +598,68 @@
       Text="Please provide a 'BizTalkServerName' MSBuild property." />
   </Target>
 
+  <Target Name="RemoveDependentBizTalkApplicationsMessage">
+    <Message
+      Importance="high"
+      Text="Removing the following dependent BizTalk Applications:" />
+    <Message
+      Condition=" '%(DependentBizTalkApplication.Identity)'!='' "
+      Importance="high"
+      Text="- %(DependentBizTalkApplication.Identity)" />
+    <Message
+      Condition=" '%(DependentBizTalkApplication.Identity)'=='' "
+      Importance="high"
+      Text="- (None configured)" />
+  </Target>
+
+  <Target Name="BeforeRemoveDependentBizTalkApplicationsCustom">
+    <!-- To be overridden in inheriting script. -->
+  </Target>
+
+  <Target Name="CoreRemoveDependentBizTalkApplications">
+    <!-- Stop dependent application(s). -->
+    <Message
+      Condition=" '%(DependentBizTalkApplication.Identity)'!='' "
+      Importance="high"
+      Text="Stopping dependent BizTalk Application '%(DependentBizTalkApplication.Identity)'." />
+    <Bts2009StopApplication
+      Condition=" '%(DependentBizTalkApplication.Identity)'!='' "
+      ApplicationName="%(DependentBizTalkApplication.Identity)"
+      ManagementDatabaseConnectionString="$(BizTalkManagementDatabaseConnectionString)"
+      TerminateOrchestrations="true" />
+    <!-- Remove dependent application(s) assemblies from the GAC. -->
+    <Message
+      Condition=" '%(DependentBizTalkApplication.Identity)'!='' "
+      Importance="high"
+      Text="Removing dependent BizTalk Application(s) Assemblies from the Global Assembly Cache (GAC)." />
+    <Message
+      Condition=" '%(DependentBizTalkApplication.Identity)'!='' "
+      Importance="high"
+      Text="Deleting assemblies from the GAC matching '%(DependentBizTalkApplication.BizTalkGacAssemblyNameFilter), Version=%(DependentBizTalkApplication.BizTalkGacVersionFilter), Culture=%(DependentBizTalkApplication.BizTalkGacLocaleFilter), PublicKeyToken=%(DependentBizTalkApplication.BizTalkGacPublicKeyTokenFilter)'." />
+    <GacUninstall
+      Condition=" '%(DependentBizTalkApplication.Identity)'!='' "
+      AssemblyName="%(DependentBizTalkApplication.BizTalkGacAssemblyNameFilter)"
+      Locale="%(DependentBizTalkApplication.BizTalkGacLocaleFilter)"
+      PublicKeyToken="%(DependentBizTalkApplication.BizTalkGacPublicKeyTokenFilter)"
+      Version="%(DependentBizTalkApplication.BizTalkGacVersionFilter)"
+      FrameworkVersion="%(DependentBizTalkApplication.FrameworkVersion)" />
+    <!-- Removing dependent application(s). -->
+    <Message
+      Condition=" '%(DependentBizTalkApplication.Identity)'!='' "
+      Importance="high"
+      Text="Removing dependent BizTalk Application '%(DependentBizTalkApplication.Identity)'." />
+    <Bts2009RemoveApplication
+      Condition=" '%(DependentBizTalkApplication.Identity)'!='' "
+      ApplicationName="%(DependentBizTalkApplication.Identity)"
+      ManagementDatabaseConnectionString="$(BizTalkManagementDatabaseConnectionString)" />
+  </Target>
+
+  <Target Name="AfterRemoveDependentBizTalkApplicationsCustom">
+    <!-- To be overridden in inheriting script. -->
+  </Target>
+
+  <Target Name="RemoveDependentBizTalkApplications" DependsOnTargets="$(RemoveDependentBizTalkApplicationsDependsOn)" />
+  
   <Target Name="StopBizTalkApplicationMessage">
     <Message 
       Importance="high" 
