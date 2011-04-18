@@ -642,7 +642,7 @@
       Locale="%(DependentBizTalkApplication.BizTalkGacLocaleFilter)"
       PublicKeyToken="%(DependentBizTalkApplication.BizTalkGacPublicKeyTokenFilter)"
       Version="%(DependentBizTalkApplication.BizTalkGacVersionFilter)"
-      FrameworkVersion="%(DependentBizTalkApplication.FrameworkVersion)" />
+      FrameworkVersion="$(FrameworkVersion)" />
     <!-- Removing dependent application(s). -->
     <Message
       Condition=" '%(DependentBizTalkApplication.Identity)'!='' "
