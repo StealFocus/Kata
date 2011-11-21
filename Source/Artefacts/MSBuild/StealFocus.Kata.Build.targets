@@ -41,6 +41,11 @@
       CoreSolutionCompile;
       AfterSolutionCompileCustom
     </SolutionCompileDependsOn>
+	  <LocalDeployDependsOn>
+	    BeforeLocalDeployCustom;
+      CoreLocalDeploy;
+      AfterLocalDeployCustom
+	  </LocalDeployDependsOn>
     <RunTestsDependsOn>
       BeforeRunTestsCustom;
       CoreRunTests;
@@ -61,6 +66,7 @@
       $(InitialiseEnvironmentDependsOn);
       $(DatabaseBuildDependsOn);
       $(SolutionCompileDependsOn);
+	    $(LocalDeployDependsOn);
       $(RunTestsDependsOn);
       $(BuildDocumentationDependsOn);
       $(PackageDependsOn);
@@ -444,6 +450,16 @@
   </Target>
 
   <Target Name="AfterSolutionCompileCustom">
+    <!-- To be overridden in inheriting script. -->
+  </Target>
+
+  <Target Name="BeforeLocalDeployCustom">
+    <!-- To be overridden in inheriting script. -->
+  </Target>
+  
+  <Target Name="CoreLocalDeploy" />
+  
+  <Target Name="AfterLocalDeployCustom">
     <!-- To be overridden in inheriting script. -->
   </Target>
 
